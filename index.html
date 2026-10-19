@@ -11,125 +11,178 @@ body{margin:0;background:#0b0f17;color:#f3f5fa;font-family:Tahoma,Arial,sans-ser
 header{background:#141b29;border-bottom:2px solid #e63946;padding:20px}
 .wrap{max-width:1000px;margin:auto;padding:16px}
 .logo{font-size:29px;font-weight:bold}.logo span{color:#ff4655}
-.sub,.meta{font-size:12px;color:#9ca9bd}
+.sub,.meta,.status{font-size:12px;color:#9ca9bd;line-height:2}
 nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
-button{background:#263146;color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
+button{background:#263146;color:white;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
 button.active{background:#e63946}
-input{width:100%;padding:13px;border-radius:9px;border:1px solid #303b50;background:#151c29;color:#fff;margin:14px 0}
+button:disabled{opacity:.5}
+input{width:100%;padding:13px;border-radius:9px;border:1px solid #303b50;background:#151c29;color:white;margin:14px 0}
 .news{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .card{background:#151c29;border:1px solid #293348;border-radius:12px;padding:16px;overflow-wrap:anywhere}
 .card h2{font-size:17px;line-height:1.9}
 .card p{font-size:14px;color:#c2cada;line-height:2}
 a{color:#ff6975;text-decoration:none}
-.status{font-size:13px;color:#9ca9bd;line-height:2}
+a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 <header><div class="wrap">
-<div class="logo">خبر<span>نما</span></div>
-<div class="sub">خبرهای ایران و جهان در یک جا</div>
-<nav id="filters">
-<button class="active" data-cat="همه">همه</button>
-<button data-cat="ایران">ایران</button>
-<button data-cat="جهان">جهان</button>
-<button data-cat="ویدیو">ویدیو</button>
-</nav>
+ <div class="logo">خبر<span>نما</span></div>
+ <div class="sub">آخرین خبرهای ایران و جهان</div>
+ <nav id="filters">
+  <button class="active" data-cat="همه">همه خبرها</button>
+  <button data-cat="ایران">ایران</button>
+  <button data-cat="جهان">جهان</button>
+  <button data-cat="ویدیو">ویدیو</button>
+ </nav>
 </div></header>
 
 <main class="wrap">
-<input id="search" placeholder="جست‌وجو در خبرها...">
-<p id="status" class="status">در حال دریافت خبرها...</p>
-<button id="refresh">تلاش مجدد برای دریافت خبرها</button>
-<section id="news" class="news"></section>
+ <input id="search" placeholder="جست‌وجو در خبرها...">
+ <p id="status" class="status">در حال اتصال به منابع خبری...</p>
+ <button id="refresh">دریافت دوباره خبرها</button>
+ <section id="news" class="news"></section>
 </main>
 
 <footer class="wrap status">
-خبرنما خبرها را از منابع اصلی گردآوری می‌کند. برای جزئیات به منبع خبر مراجعه کنید.
+خبرنما خبرها را از منابع اصلی گردآوری می‌کند. برای مطالعه کامل، منبع اصلی را باز کنید.
 </footer>
 
 <script>
 const feeds=[
  {name:"BBC فارسی",url:"https://feeds.bbci.co.uk/persian/rss.xml",cat:"ایران"},
  {name:"DW فارسی",url:"https://rss.dw.com/xml/rss-fa-all",cat:"جهان"},
- {name:"ایران اینترنشنال یوتیوب",
+ {name:"ایران اینترنشنال - یوتیوب",
   url:"https://www.youtube.com/feeds/videos.xml?channel_id=UCat6bC0Wrqq9Bcq7EkH_yQw",
   cat:"ویدیو"}
 ];
 
 let allNews=[];
-let category="همه";
+let selectedCategory="همه";
 
 function clean(s=""){
  const d=document.createElement("div");
  d.innerHTML=s;
  return (d.textContent||"").replace(/\s+/g," ").trim();
 }
+
 function escapeHTML(s=""){
  return String(s).replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
  }[c]));
 }
-function render(){
- const term=document.getElementById("search").value.toLowerCase();
- const list=allNews.filter(n=>
-  (category==="همه"||n.cat===category)&&
-  (n.title+" "+n.summary+" "+n.source).toLowerCase().includes(term)
- );
- document.getElementById("news").innerHTML=list.map(n=>`
-  <article class="card">
-   <div class="meta">${escapeHTML(n.source)} · ${escapeHTML(n.date)}</div>
-   <h2>${escapeHTML(n.title)}</h2>
-   <p>${escapeHTML(n.summary)}</p>
-   <a href="${escapeHTML(n.url)}" target="_blank" rel="noopener noreferrer">مشاهده خبر اصلی ←</a>
-  </article>`).join("")||"<p>خبری پیدا نشد.</p>";
-}
+
 async function getFeed(feed){
+ // سرویس واسط برای تلاش جهت دور زدن محدودیت CORS
  const proxy="https://api.allorigins.win/raw?url="+encodeURIComponent(feed.url);
  const response=await fetch(proxy);
- if(!response.ok)throw Error("Feed unavailable");
- const xml=new DOMParser().parseFromString(await response.text(),"text/xml");
- if(xml.querySelector("parsererror"))throw Error("Invalid RSS");
- const entries=[...xml.querySelectorAll("item")];
- if(entries.length){
-  return entries.map(e=>({
+ if(!response.ok)throw Error("HTTP "+response.status);
+
+ const xmlText=await response.text();
+ const xml=new DOMParser().parseFromString(xmlText,"application/xml");
+ if(xml.querySelector("parsererror"))throw Error("RSS نامعتبر است");
+
+ const rssEntries=[...xml.querySelectorAll("item")];
+
+ if(rssEntries.length){
+  return rssEntries.map(e=>({
    title:clean(e.querySelector("title")?.textContent),
    summary:clean(e.querySelector("description")?.textContent),
    url:e.querySelector("link")?.textContent?.trim()||"",
    date:e.querySelector("pubDate")?.textContent||"",
-   source:feed.name,cat:feed.cat
-  })).filter(n=>n.title&&n.url);
+   source:feed.name,
+   cat:feed.cat,
+   kind:feed.cat==="ویدیو"?"video":"news"
+  })).filter(n=>n.title&&/^https?:\/\//i.test(n.url));
  }
- return [...xml.querySelectorAll("entry")].map(e=>({
-  title:clean(e.querySelector("title")?.textContent),
-  summary:"ویدیوی جدید از کانال منبع",
-  url:e.querySelector("link")?.getAttribute("href")||"",
-  date:e.querySelector("published")?.textContent||"",
-  source:feed.name,cat:feed.cat
- })).filter(n=>n.title&&n.url);
+
+ const atomEntries=[...xml.querySelectorAll("entry")];
+
+ return atomEntries.map(e=>{
+  const link=e.querySelector("link[rel='alternate']")||
+             e.querySelector("link[href]");
+  return {
+   title:clean(e.querySelector("title")?.textContent),
+   summary:clean(e.querySelector("summary")?.textContent||
+                 e.querySelector("content")?.textContent),
+   url:link?.getAttribute("href")||"",
+   date:e.querySelector("published")?.textContent||
+        e.querySelector("updated")?.textContent||"",
+   source:feed.name,
+   cat:feed.cat,
+   kind:"video"
+  };
+ }).filter(n=>n.title&&/^https?:\/\//i.test(n.url));
 }
-async function load(){
+
+function render(){
+ const term=document.getElementById("search").value.trim().toLowerCase();
+
+ const list=allNews.filter(n=>{
+  const matchesCategory=selectedCategory==="همه"||
+                        n.cat===selectedCategory;
+  const matchesSearch=(n.title+" "+n.summary+" "+n.source)
+                       .toLowerCase().includes(term);
+  return matchesCategory&&matchesSearch;
+ });
+
+ document.getElementById("news").innerHTML=list.map(n=>`
+  <article class="card">
+   <div class="meta">${escapeHTML(n.source)} · ${escapeHTML(n.date)}</div>
+   <h2>${escapeHTML(n.title)}</h2>
+   <p>${escapeHTML(n.summary||"برای خواندن جزئیات، خبر اصلی را باز کنید.")}</p>
+   <a href="${escapeHTML(n.url)}" target="_blank" rel="noopener noreferrer">
+    مطالعه در منبع اصلی ←
+   </a>
+  </article>
+ `).join("")||'<p class="status">خبری برای نمایش پیدا نشد.</p>';
+}
+
+async function loadNews(){
  const status=document.getElementById("status");
+ const refresh=document.getElementById("refresh");
  status.textContent="در حال دریافت خبرها از منابع...";
- document.getElementById("refresh").disabled=true;
+ refresh.disabled=true;
+
  const results=await Promise.allSettled(feeds.map(getFeed));
  allNews=results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
+
  const failed=results.filter(r=>r.status==="rejected").length;
+ const successful=feeds.length-failed;
+
+ allNews.sort((a,b)=>{
+  const da=Date.parse(a.date)||0;
+  const db=Date.parse(b.date)||0;
+  return db-da;
+ });
+
  render();
- status.textContent=allNews.length
-  ?`تعداد خبرها: ${allNews.length} | آخرین بررسی: ${new Date().toLocaleString("fa-IR")}${failed?" | بعضی منابع در دسترس نبودند.":""}`
-  :"خبر دریافت نشد؛ ممکن است فید یا سرویس واسط موقتاً در دسترس نباشد.";
- document.getElementById("refresh").disabled=false;
+
+ if(allNews.length){
+  status.textContent=`تعداد خبرها: ${allNews.length} | منابع پاسخ‌داده: ${successful} از ${feeds.length} | زمان بررسی: ${new Date().toLocaleString("fa-IR")}`+
+    (failed?` | ${failed} منبع خطا داد.`:"");
+ }else{
+  status.textContent="هیچ خبری دریافت نشد. اتصال اینترنت، فیدها یا سرویس واسط ممکن است مشکل داشته باشد.";
+ }
+
+ refresh.disabled=false;
 }
+
 document.getElementById("filters").addEventListener("click",e=>{
  if(!e.target.dataset.cat)return;
- category=e.target.dataset.cat;
+ selectedCategory=e.target.dataset.cat;
+
  document.querySelectorAll("#filters button").forEach(b=>
-  b.classList.toggle("active",b===e.target));
+  b.classList.toggle("active",b===e.target)
+ );
+
  render();
 });
+
 document.getElementById("search").addEventListener("input",render);
-document.getElementById("refresh").addEventListener("click",load);
-load();
+document.getElementById("refresh").addEventListener("click",loadNews);
+
+loadNews();
 </script>
 </body>
 </html>
