@@ -3,32 +3,173 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سایت من</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>وِیو | پیام‌رسان</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
-      text-align: center;
-      background: #111827;
+      margin: 0;
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Tahoma, sans-serif;
+      background: #0b1020;
       color: white;
-      padding: 40px 20px;
     }
-    a {
-      display: block;
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #171f33;
+      padding: 26px;
+      border-radius: 22px;
+      border: 1px solid #293650;
+    }
+    h1 { text-align: center; color: #60a5fa; }
+    p { text-align: center; color: #cbd5e1; }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border-radius: 10px;
+      font: inherit;
+    }
+    input {
+      background: #0b1020;
+      color: white;
+      border: 1px solid #38445e;
+      direction: ltr;
+    }
+    button {
+      border: 0;
       background: #2563eb;
       color: white;
-      padding: 15px;
-      margin: 15px auto;
-      max-width: 300px;
-      border-radius: 12px;
-      text-decoration: none;
+      cursor: pointer;
     }
+    button.secondary { background: #334155; }
+    #message {
+      font-size: 14px;
+      overflow-wrap: anywhere;
+      line-height: 1.9;
+    }
+    #account { display: none; }
   </style>
 </head>
 <body>
-  <h1>به سایت من خوش آمدید</h1>
-  <p>سایت من با موفقیت ساخته می‌شود!</p>
-  <a href="https://t.me/">ورود به تلگرام</a>
-  <a href="https://telegram.org/">درباره تلگرام</a>
+  <main class="card">
+    <h1>وِیو 💬</h1>
+    <p>به پیام‌رسان وِیو خوش آمدی</p>
+
+    <section id="login">
+      <input id="email" type="email"
+        placeholder="ایمیل" autocomplete="email">
+      <input id="password" type="password"
+        placeholder="رمز عبور (حداقل ۶ حرف)"
+        autocomplete="current-password">
+
+      <button id="signup">ثبت‌نام</button>
+      <button id="signin" class="secondary">ورود به حساب</button>
+    </section>
+
+    <section id="account">
+      <p>با موفقیت وارد شدی 🎉</p>
+      <p id="userEmail"></p>
+      <button id="logout" class="secondary">خروج از حساب</button>
+    </section>
+
+    <p id="message">برای شروع ثبت‌نام کن یا وارد حسابت شو.</p>
+  </main>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKRW7HZ2jF3Ggg4SahrK_fZMwhcFlSYaI",
+      authDomain: "hasan-205ee.firebaseapp.com",
+      projectId: "hasan-205ee",
+      storageBucket: "hasan-205ee.firebasestorage.app",
+      messagingSenderId: "327915413545",
+      appId: "1:327915413545:web:c697b2d822efb953f57c38"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const $ = id => document.getElementById(id);
+    const message = text => $("message").textContent = text;
+
+    $("signup").onclick = async () => {
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      if (!email || !password) {
+        message("ایمیل و رمز عبور را وارد کن.");
+        return;
+      }
+
+      try {
+        message("در حال ثبت‌نام...");
+        const result = await createUserWithEmailAndPassword(
+          auth, email, password
+        );
+
+        await setDoc(doc(db, "users", result.user.uid), {
+          uid: result.user.uid,
+          email: result.user.email,
+          createdAt: serverTimestamp()
+        });
+
+        message("ثبت‌نام با موفقیت انجام شد!");
+      } catch (error) {
+        message("خطا: " + error.message);
+      }
+    };
+
+    $("signin").onclick = async () => {
+      try {
+        message("در حال ورود...");
+        await signInWithEmailAndPassword(
+          auth,
+          $("email").value.trim(),
+          $("password").value
+        );
+        message("ورود موفق بود!");
+      } catch (error) {
+        message("خطا: " + error.message);
+      }
+    };
+
+    $("logout").onclick = async () => {
+      try {
+        await signOut(auth);
+        message("از حساب خارج شدی.");
+      } catch (error) {
+        message("خطا: " + error.message);
+      }
+    };
+
+    onAuthStateChanged(auth, user => {
+      $("login").style.display = user ? "none" : "block";
+      $("account").style.display = user ? "block" : "none";
+      $("userEmail").textContent = user ? user.email : "";
+    });
+  </script>
 </body>
 </html>
