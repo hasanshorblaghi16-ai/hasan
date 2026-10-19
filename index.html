@@ -1,175 +1,49 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>وِیو | پیام‌رسان</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 24px 16px;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: Tahoma, sans-serif;
-      background: #0b1020;
-      color: white;
-    }
-    .card {
-      width: 100%;
-      max-width: 380px;
-      background: #171f33;
-      padding: 26px;
-      border-radius: 22px;
-      border: 1px solid #293650;
-    }
-    h1 { text-align: center; color: #60a5fa; }
-    p { text-align: center; color: #cbd5e1; }
-    input, button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border-radius: 10px;
-      font: inherit;
-    }
-    input {
-      background: #0b1020;
-      color: white;
-      border: 1px solid #38445e;
-      direction: ltr;
-    }
-    button {
-      border: 0;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-    button.secondary { background: #334155; }
-    #message {
-      font-size: 14px;
-      overflow-wrap: anywhere;
-      line-height: 1.9;
-    }
-    #account { display: none; }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131c"><title>MAKU | ماکو</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1018;--panel:#151a26;--panel2:#1b2231;--line:#293246;--text:#f3f5fb;--muted:#98a4ba;--accent:#7c5cff;--accent2:#25c8a5;--danger:#ff637d}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer;border:0}.app{min-height:100dvh;display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1500px;margin:auto}.sidebar{background:#111621;border-left:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:18px}.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 16px}.logo{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#8c71ff,#5c42d8);font-size:24px;font-weight:bold;box-shadow:0 8px 28px #7558ff40}.brand h1{font-size:20px;margin:0;letter-spacing:1px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.nav{display:grid;gap:6px}.nav button{display:flex;align-items:center;gap:12px;text-align:right;padding:13px 14px;border-radius:13px;color:#b7c0d2;background:transparent}.nav button.active,.nav button:hover{background:#27213f;color:white}.nav .ico{width:22px;text-align:center;font-size:18px}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 0;color:var(--muted);font-size:12px;line-height:1.8}.main{min-width:0;padding:24px clamp(14px,3vw,36px)}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.heading h2{font-size:24px;margin:0 0 7px}.heading p{color:var(--muted);margin:0;font-size:13px}.avatar{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#25c8a5,#2674cc);display:grid;place-items:center;font-weight:bold}.profile-pill{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:7px 12px 7px 7px;border-radius:16px}.profile-pill small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}.stat{display:flex;align-items:center;gap:13px}.stat-icon{width:44px;height:44px;border-radius:14px;background:#292344;display:grid;place-items:center;font-size:21px}.stat strong{font-size:23px;display:block}.stat span{color:var(--muted);font-size:12px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px}.section-title h3{margin:0;font-size:17px}.section-title p{margin:0;color:var(--muted);font-size:12px}.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.quick{padding:18px;background:linear-gradient(145deg,#1a2030,#171a27);border:1px solid var(--line);border-radius:17px;min-height:125px;text-align:right;color:var(--text)}.quick b{display:block;margin:12px 0 7px}.quick span{color:var(--muted);font-size:12px;line-height:1.7}.quick .qico{font-size:24px}.banner{margin-top:18px;border-radius:18px;padding:20px;background:linear-gradient(120deg,#342567,#192c49);display:flex;align-items:center;justify-content:space-between;gap:14px}.banner h3{margin:0 0 8px}.banner p{margin:0;color:#d2d4ef;font-size:13px;line-height:1.8}.primary,.secondary,.danger{padding:11px 15px;border-radius:12px;color:white;background:var(--accent);font-weight:bold}.secondary{background:var(--panel2);border:1px solid var(--line);font-weight:normal}.danger{background:#612b3a}.screen{display:none}.screen.active{display:block}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}.toolbar{padding:14px;display:flex;gap:10px;border-bottom:1px solid var(--line)}.field{width:100%;min-width:0;background:#0f1420;border:1px solid var(--line);color:var(--text);padding:12px 14px;border-radius:12px;outline:none}.field:focus{border-color:var(--accent)}.list{display:grid}.person{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #252c3c}.person:last-child{border-bottom:0}.person .meta{min-width:0;flex:1}.person b{display:block;font-size:14px}.person small{display:block;color:var(--muted);font-size:12px;margin-top:5px;overflow:hidden;text-overflow:ellipsis}.empty{padding:38px 18px;text-align:center;color:var(--muted);line-height:2}.chat-layout{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:520px}.chat-list{border-left:1px solid var(--line);min-width:0}.chat-area{display:flex;flex-direction:column;min-width:0;min-height:520px}.chat-head{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--line)}.chat-messages{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:250px;max-height:480px;overflow:auto}.bubble{max-width:min(78%,520px);padding:11px 13px;border-radius:14px;background:#252d40;align-self:flex-start;line-height:1.8;overflow-wrap:anywhere}.bubble.mine{background:#4d3da0;align-self:flex-end}.bubble small{display:block;color:#c8c7e9;font-size:10px;text-align:left;margin-top:5px}.composer{padding:12px;display:flex;gap:8px;border-top:1px solid var(--line)}.composer input{flex:1;min-width:0}.auth-wrap{max-width:430px;margin:8vh auto;padding:28px}.auth-wrap .card{padding:26px}.auth-wrap h2{margin:0 0 10px}.auth-wrap p{color:var(--muted);line-height:1.8;font-size:13px}.auth-form{display:grid;gap:12px;margin-top:20px}.notice{font-size:12px;line-height:1.8;color:var(--muted);margin-top:12px}.hidden{display:none!important}.feature-row{display:flex;gap:8px;flex-wrap:wrap}.tag{border:1px solid var(--line);background:#1b2231;color:#cdd5e5;border-radius:99px;padding:7px 11px;font-size:12px}.mobile-nav{display:none}.muted{color:var(--muted)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}.list-card{display:flex;align-items:center;gap:12px}.list-card .meta{flex:1}.list-card p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
+@media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:18px 13px 88px}.grid{grid-template-columns:1fr 1fr}.quick-grid{grid-template-columns:1fr 1fr}.chat-layout{grid-template-columns:1fr}.chat-list{border-left:0;border-bottom:1px solid var(--line)}.chat-area{min-height:420px}.chat-messages{max-height:380px}.mobile-nav{position:fixed;z-index:20;bottom:0;right:0;left:0;display:flex;justify-content:space-around;gap:2px;background:#111621ed;backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom))}.mobile-nav button{flex:1;display:grid;gap:4px;place-items:center;background:transparent;color:var(--muted);font-size:10px;padding:5px 0}.mobile-nav button.active{color:#b6a8ff}.mobile-nav span{font-size:19px}.banner{align-items:flex-start;flex-direction:column}.two-col{grid-template-columns:1fr}}
+@media(max-width:430px){.grid{gap:8px}.stat{padding:12px;gap:9px}.stat-icon{width:36px;height:36px}.stat strong{font-size:19px}.quick-grid{gap:8px}.quick{padding:13px;min-height:120px}.heading h2{font-size:21px}.profile-pill .user-label{display:none}}
+</style>
 </head>
 <body>
-  <main class="card">
-    <h1>وِیو 💬</h1>
-    <p>به پیام‌رسان وِیو خوش آمدی</p>
-
-    <section id="login">
-      <input id="email" type="email"
-        placeholder="ایمیل" autocomplete="email">
-      <input id="password" type="password"
-        placeholder="رمز عبور (حداقل ۶ حرف)"
-        autocomplete="current-password">
-
-      <button id="signup">ثبت‌نام</button>
-      <button id="signin" class="secondary">ورود به حساب</button>
+<div id="authView" class="auth-wrap">
+  <div class="brand" style="padding:0 0 18px"><div class="logo">M</div><div><h1>MAKU</h1><small>ماکو؛ فراتر از یک پیام‌رسان</small></div></div>
+  <div class="card"><h2 id="authTitle">ورود به ماکو</h2><p>برای ورود به فضای پیام‌رسان ماکو، حساب خودت را وارد کن یا حساب جدید بساز.</p>
+    <form id="authForm" class="auth-form"><input id="email" class="field" type="email" placeholder="ایمیل" autocomplete="email" required><input id="password" class="field" type="password" placeholder="رمز عبور (حداقل ۶ حرف)" autocomplete="current-password" minlength="6" required><button class="primary" id="authSubmit" type="submit">ورود</button></form>
+    <button class="secondary" id="toggleAuth" style="width:100%;margin-top:10px">حساب ندارم؛ ثبت‌نام</button><div id="authMessage" class="notice">ورود و ثبت‌نام با Firebase انجام می‌شود.</div>
+  </div>
+</div>
+<div id="membershipGate" class="auth-wrap hidden">
+  <div class="brand" style="padding:0 0 18px"><div class="logo">M</div><div><h1>MAKU</h1><small>عضویت لازم است</small></div></div>
+  <div class="card"><h2>📣 قبل از ورود، عضو کانال ماکو شو</h2><p id="gateDescription">برای استفاده از ماکو باید عضو کانال داخلی تعیین‌شده توسط مدیر اصلی باشی.</p><div id="gateChannelInfo" class="notice">در حال بارگذاری کانال...</div><button id="gateJoinBtn" class="primary" style="width:100%;margin-top:14px">عضویت در کانال</button><button id="gateCheckBtn" class="secondary" style="width:100%;margin-top:9px">بررسی عضویت و ورود</button><button id="gateLogoutBtn" class="secondary" style="width:100%;margin-top:9px">خروج از حساب</button><div id="gateMessage" class="notice"></div></div>
+</div>
+<div id="appView" class="app hidden">
+  <aside class="sidebar"><div class="brand"><div class="logo">M</div><div><h1>MAKU</h1><small>ماکو؛ فراتر از پیام‌رسان</small></div></div>
+    <div class="nav" id="sideNav"><button class="active" data-screen="home"><span class="ico">⌂</span>خانه</button><button data-screen="chats"><span class="ico">▤</span>گفت‌وگوها</button><button data-screen="friends"><span class="ico">♧</span>دوستان و آشنایی</button><button data-screen="groups"><span class="ico">♙</span>گروه‌ها</button><button data-screen="channels"><span class="ico">◉</span>کانال‌ها</button><button data-screen="bots"><span class="ico">♙</span>ربات‌ساز</button><button data-screen="profile"><span class="ico">◎</span>پروفایل من</button><button data-screen="ads"><span class="ico">▣</span>تبلیغات</button><button data-screen="settings"><span class="ico">⚙</span>تنظیمات</button><button data-screen="admin" id="adminNav" class="hidden"><span class="ico">🛡</span>کنترل ادمین</button></div>
+    <div class="side-bottom">MAKU CLASSIC<br>ارتباط، جامعه و ابزارهای مدیریتی</div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><div class="heading"><h2 id="pageTitle">خانه</h2><p id="pageSubtitle">همه ارتباطاتت، یک‌جا.</p></div><div class="profile-pill"><div class="avatar" id="topAvatar">M</div><div class="user-label"><b id="topName">کاربر ماکو</b><small id="topEmail">...</small></div></div></div>
+    <section class="screen active" id="screen-home"><div class="grid"><div class="stat"><div class="stat-icon">💬</div><div><strong id="statChats">۰</strong><span>گفت‌وگوها</span></div></div><div class="stat"><div class="stat-icon">👥</div><div><strong id="statPeople">۰</strong><span>کاربران پیدا شده</span></div></div><div class="stat"><div class="stat-icon">🛡️</div><div><strong>فعال</strong><span>حساب شما</span></div></div></div>
+      <div class="section-title"><h3>میان‌برها</h3><p>از اینجا شروع کن</p></div><div class="quick-grid"><button class="quick" data-goto="chats"><div class="qico">💬</div><b>گفت‌وگوی جدید</b><span>پیدا کردن کاربر و شروع چت خصوصی</span></button><button class="quick" data-goto="friends"><div class="qico">💜</div><b>دوستان و آشنایی</b><span>پیدا کردن افراد و ارتباط با رضایت دوطرفه</span></button><button class="quick" data-goto="bots"><div class="qico">🤖</div><b>ربات‌ساز</b><span>مرکز طراحی و مدیریت ربات‌ها</span></button><button class="quick" data-goto="groups"><div class="qico">👥</div><b>گروه‌ها</b><span>فضای گروهی برای گفت‌وگو</span></button><button class="quick" data-goto="channels"><div class="qico">📣</div><b>کانال‌ها</b><span>پیگیری خبرها و محتوای دلخواه</span></button><button class="quick" data-goto="settings"><div class="qico">🔐</div><b>حریم خصوصی</b><span>مدیریت حساب و خروج امن</span></button></div>
+      <div class="banner"><div><h3>به نسل جدید ارتباطات خوش آمدی</h3><p>یک فضای کلاسیک و مدرن برای گفت‌وگو، کانال‌ها، گروه‌ها و ابزارهای مدیریتی. برخی امکانات پیشرفته به سرور امن نیاز دارند.</p></div><button class="primary" data-goto="chats">شروع گفت‌وگو ←</button></div>
     </section>
-
-    <section id="account">
-      <p>با موفقیت وارد شدی 🎉</p>
-      <p id="userEmail"></p>
-      <button id="logout" class="secondary">خروج از حساب</button>
+    <section class="screen" id="screen-chats"><div class="panel chat-layout"><div class="chat-list"><div class="toolbar"><input class="field" id="userSearch" placeholder="جست‌وجوی کاربر با ایمیل..."></div><div id="userResults" class="list"><div class="empty">برای شروع چت، ایمیل کاربر ثبت‌نام‌کرده را جست‌وجو کن.</div></div><div class="section-title" style="padding:0 14px;margin:15px 0 8px"><h3>گفت‌وگوهای من</h3></div><div id="chatList" class="list"><div class="empty">هنوز گفت‌وگویی نداری.</div></div></div><div class="chat-area"><div id="chatHeader" class="chat-head"><div class="avatar">💬</div><div><b>گفت‌وگو</b><div class="muted" style="font-size:12px;margin-top:4px">یک کاربر را انتخاب کن</div></div></div><div id="messages" class="chat-messages"><div class="empty">برای شروع، کاربری را از فهرست سمت راست انتخاب کن.</div></div><form id="messageForm" class="composer"><input id="messageInput" class="field" placeholder="پیامت را بنویس..." maxlength="4000" disabled><button class="primary" id="sendButton" disabled>ارسال</button></form></div></div><p class="notice">فعلاً چت خصوصی متنی بین کاربران واردشده فعال است. ارسال رسانه، گروه‌ها و تماس‌ها هنوز پیاده‌سازی نشده‌اند.</p></section>
+    <section class="screen" id="screen-friends"><div class="card"><h3>💜 دوستان و آشنایی</h3><p class="muted" style="line-height:2">این بخش برای پیدا کردن افراد، فرستادن درخواست دوستی و شروع ارتباط با رضایت دو طرف طراحی شده است. سیستم درخواست دوستی هنوز به پایگاه داده وصل نشده.</p><button class="primary" data-goto="chats">پیدا کردن کاربران</button></div><div class="section-title"><h3>قابلیت‌های آینده</h3></div><div class="feature-row"><span class="tag">درخواست دوستی</span><span class="tag">تأیید دوطرفه</span><span class="tag">مسدودسازی</span><span class="tag">کنترل حریم خصوصی</span></div></section>
+    <section class="screen" id="screen-groups"><div class="two-col"><div class="card"><h3>👥 ساخت گروه</h3><form id="createGroupForm" class="auth-form"><input id="groupTitle" class="field" maxlength="60" placeholder="نام گروه" required><textarea id="groupDescription" class="field" rows="3" maxlength="300" placeholder="توضیحات گروه"></textarea><button class="primary">ساخت گروه</button></form><div id="groupMessage" class="notice"></div></div><div class="card"><h3>گروه‌های من</h3><p class="muted">گروه‌های ساخته‌شده در پایگاه داده نمایش داده می‌شوند.</p><div id="groupList" class="list"><div class="empty">در حال بارگذاری...</div></div></div></div><div class="card" id="groupDetail" style="margin-top:14px"><div class="empty">برای دیدن پیام‌ها یک گروه را انتخاب کن.</div></div></section>
+    <section class="screen" id="screen-channels">
+      <div class="two-col">
+        <div class="card"><h3>➕ ساخت کانال داخلی</h3><p class="muted" style="line-height:1.8;font-size:13px">یک کانال داخل خود ماکو بساز و پست منتشر کن.</p><form id="createChannelForm" class="auth-form" style="margin-top:12px"><input id="channelTitle" class="field" maxlength="60" placeholder="نام کانال" required><textarea id="channelDescription" class="field" maxlength="300" rows="3" placeholder="توضیحات کانال (اختیاری)"></textarea><button class="primary" type="submit">ساخت کانال</button></form><div id="channelCreateMessage" class="notice"></div></div>
+        <div class="card" id="mandatoryAdminCard"><h3>🛡️ تنظیم عضویت اجباری</h3><p class="muted" style="line-height:1.8;font-size:13px">این گزینه فقط برای مدیر اصلی ماکو فعال است. کانال انتخاب‌شده پیش از ورود به برنامه بررسی می‌شود.</p><select id="mandatoryChannelSelect" class="field"><option value="">بدون عضویت اجباری</option></select><button id="saveMandatoryChannel" class="primary" style="margin-top:10px;width:100%">ذخیره تنظیم</button><div id="mandatoryMessage" class="notice">برای فعال شدن مدیریت، شناسه مدیر را در کد و قوانین Firestore تنظیم کن.</div></div>
+      </div>
+      <div class="section-title"><h3>کانال‌های ماکو</h3><p id="channelCountLabel">کانال‌های داخلی</p></div>
+      <div class="panel"><div id="channelList" class="list"><div class="empty">در حال بارگذاری کانال‌ها...</div></div></div>
+      <div class="card" id="channelDetail" style="margin-top:14px"><div class="empty">برای دیدن پست‌ها، یک کانال را انتخاب کن.</div></div>
     </section>
-
-    <p id="message">برای شروع ثبت‌نام کن یا وارد حسابت شو.</p>
-  </main>
-
-  <script type="module">
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCKRW7HZ2jF3Ggg4SahrK_fZMwhcFlSYaI",
-      authDomain: "hasan-205ee.firebaseapp.com",
-      projectId: "hasan-205ee",
-      storageBucket: "hasan-205ee.firebasestorage.app",
-      messagingSenderId: "327915413545",
-      appId: "1:327915413545:web:c697b2d822efb953f57c38"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const $ = id => document.getElementById(id);
-    const message = text => $("message").textContent = text;
-
-    $("signup").onclick = async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-
-      if (!email || !password) {
-        message("ایمیل و رمز عبور را وارد کن.");
-        return;
-      }
-
-      try {
-        message("در حال ثبت‌نام...");
-        const result = await createUserWithEmailAndPassword(
-          auth, email, password
-        );
-
-        await setDoc(doc(db, "users", result.user.uid), {
-          uid: result.user.uid,
-          email: result.user.email,
-          createdAt: serverTimestamp()
-        });
-
-        message("ثبت‌نام با موفقیت انجام شد!");
-      } catch (error) {
-        message("خطا: " + error.message);
-      }
-    };
-
-    $("signin").onclick = async () => {
-      try {
-        message("در حال ورود...");
-        await signInWithEmailAndPassword(
-          auth,
-          $("email").value.trim(),
-          $("password").value
-        );
-        message("ورود موفق بود!");
-      } catch (error) {
-        message("خطا: " + error.message);
-      }
-    };
-
-    $("logout").onclick = async () => {
-      try {
-        await signOut(auth);
-        message("از حساب خارج شدی.");
-      } catch (error) {
-        message("خطا: " + error.message);
-      }
-    };
-
-    onAuthStateChanged(auth, user => {
-      $("login").style.display = user ? "none" : "block";
-      $("account").style.display = user ? "block" : "none";
-      $("userEmail").textContent = user ? user.email : "";
-    });
-  </script>
-</body>
-</html>
+    <section class="screen" id="screen-bots"><div class="card"><h3>🤖 مرکز ربات‌ساز ماکو</h3><p class="muted" style="line-height:2">فقط مدیر اصلی ماکو می‌تواند ربات بسازد و قابلیت‌های آن را انتخاب کند. این ربات‌ها برای استفاده داخل خود ماکو طراحی شده‌اند و به ربات تلگرام وابسته نیستند.</p><div id="botAdminBuilder" class="hidden"><form id="createBotForm" class="auth-form"><input id="botName" class="field" maxlength="50" placeholder="نام ربات" required><textarea id="botDescription" class="field" rows="2" maxlength="300" placeholder="توضیحات ربات"></textarea><label class="muted">نوع دسترسی</label><select id="botPricing" class="field"><option value="free">رایگان</option><option value="paid">پولی / نیازمند هماهنگی با مدیر</option></select><label><input type="checkbox" id="botAntiLink"> حذف لینک در گروه (نیازمند سرور ربات)</label><label><input type="checkbox" id="botWelcome"> پیام خوش‌آمدگویی</label><label><input type="checkbox" id="botForceJoin"> بررسی عضویت اجباری در کانال</label><label><input type="checkbox" id="botKickMember"> قابلیت ریم دستی (اخراج کاربر از گروه)</label><label><input type="checkbox" id="botKickOnGroupAdminReport"> ریم خودکار وقتی مدیر گروه کاربری را ریپ کند</label><label><input type="checkbox" id="botMuteAfter3"> سکوت کاربر بعد از ۳ اخطار</label><button class="primary">ساخت و انتشار ربات داخلی</button></form><div id="botCreateMessage" class="notice"></div></div><div class="section-title"><h3>ربات‌های منتشرشده</h3></div><div id="botList" class="list"><div class="empty">در حال بارگذاری ربات‌ها...</div></div><div class="notice">ساخت و تنظیم ربات فقط برای مدیر اصلی فعال است. قابلیت‌های انتخاب‌شده همراه تنظیمات ربات ذخیره می‌شوند؛ اجرای ریم پس از ریپ مدیر گروه از طریق Cloud Function انجام می‌شود؛ پس از نصب تابع و انتشار قوانین Firestore فعال می‌شود.</div></div></section>
+    <section class="screen" id="screen-profile"><div class="card"><div class="list-card"><div class="avatar" id="profileAvatar">M</div><div class="meta"><h3 id="profileName" style="margin:0">کاربر ماکو</h3><p id="profileEmail">...</p></div></div><div class="section-title"><h3>ویرایش پروفایل</h3></div><form id="profileForm" class="auth-form"><input id="displayNameInput" class="field" maxlength="40" placeholder="نام نمایشی"><input id="avatarUrlInput" class="field" type="url" placeholder="لینک عکس پروفایل (اختیاری)"><textarea id="bioInput" class="field" rows="3" maxlength="240" placeholder="درباره من"></textarea><button class="primary">ذخیره پروفایل</button></form><div id="profileMessage" class="notice"></div><div class="section-title"><h3>اطلاعات حساب</h3></div><p class="muted" id="profileUid" style="overflow-wrap:anywhere;font-size:12px"></p><button class="secondary" id="openChatWallpaper">تغییر پس‌زمینه چت</button><input id="wallpaperInput" class="field" type="url" placeholder="لینک تصویر پس‌زمینه" style="margin-top:10px"><div class="notice">برای حفظ امنیت، عکس‌ها را از لینک‌های معتبر استفاده کن. آپلود مستقیم فایل به فضای ذخیره‌سازی هنوز نیازمند تنظیم Storage است.</div></div></section>
+    <section class="screen" id="screen-settings"><div class="card"><h3>⚙️ تنظیمات و حریم خصوصی</h3><div class="section-title"><h3 id="languageHeading">زبان پیام‌رسان</h3></div><p id="languageHelp" class="muted" style="line-height:1.8">زبان رابط ماکو را برای حساب خودت انتخاب کن.</p><select id="languageSelect" class="field"><option value="fa">فارسی</option><option value="en">English</option><option value="de">Deutsch</option><option value="ar">العربية</option></select><button id="saveLanguageBtn" class="primary" style="margin-top:10px">ذخیره زبان</button><div id="languageMessage" class="notice"></div><p class="muted" style="line-height:2">گزارش سوءاستفاده، مسدودکردن و کنترل نشست.</p><form id="reportForm" c
