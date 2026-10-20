@@ -1,864 +1,417 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101827">
-  <title>پیام‌رسان نوا</title>
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #0b1120;
-      --panel: #111b2d;
-      --panel2: #17243a;
-      --primary: #6366f1;
-      --primary2: #818cf8;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --border: rgba(255,255,255,.07);
-      --green: #22c55e;
-    }
-
-    body {
-      font-family: Tahoma, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    button, input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-      border: none;
-    }
-
-    .app {
-      display: flex;
-      width: 100%;
-      height: 100dvh;
-      max-width: 1600px;
-      margin: auto;
-    }
-
-    /* Sidebar */
-
-    .sidebar {
-      width: 350px;
-      min-width: 300px;
-      background: var(--panel);
-      border-left: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .topbar {
-      padding: 22px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 21px;
-      font-weight: bold;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #6366f1, #a855f7);
-      display: grid;
-      place-items: center;
-      font-size: 23px;
-    }
-
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      color: var(--text);
-      background: var(--panel2);
-      font-size: 19px;
-      transition: .2s;
-    }
-
-    .icon-btn:hover {
-      background: #293953;
-    }
-
-    .search-box {
-      margin: 0 16px 16px;
-      position: relative;
-    }
-
-    .search-box input {
-      width: 100%;
-      background: var(--panel2);
-      border: 1px solid transparent;
-      outline: none;
-      color: white;
-      border-radius: 14px;
-      padding: 14px 42px 14px 14px;
-    }
-
-    .search-box input:focus {
-      border-color: var(--primary);
-    }
-
-    .search-icon {
-      position: absolute;
-      right: 14px;
-      top: 13px;
-      color: var(--muted);
-    }
-
-    .section-title {
-      padding: 5px 20px 12px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .chat-list {
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    .chat-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: .2s;
-      border-right: 3px solid transparent;
-    }
-
-    .chat-item:hover {
-      background: rgba(255,255,255,.035);
-    }
-
-    .chat-item.active {
-      background: rgba(99,102,241,.13);
-      border-right-color: var(--primary);
-    }
-
-    .avatar {
-      width: 49px;
-      height: 49px;
-      min-width: 49px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      font-size: 22px;
-      position: relative;
-      background: linear-gradient(135deg, #334155, #475569);
-    }
-
-    .avatar.purple { background: linear-gradient(135deg,#7c3aed,#c084fc); }
-    .avatar.blue { background: linear-gradient(135deg,#2563eb,#38bdf8); }
-    .avatar.orange { background: linear-gradient(135deg,#ea580c,#fbbf24); }
-    .avatar.green { background: linear-gradient(135deg,#059669,#4ade80); }
-    .avatar.pink { background: linear-gradient(135deg,#db2777,#fb7185); }
-
-    .online-dot {
-      position: absolute;
-      bottom: -2px;
-      left: -2px;
-      width: 12px;
-      height: 12px;
-      background: var(--green);
-      border: 2px solid var(--panel);
-      border-radius: 50%;
-    }
-
-    .chat-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .chat-name-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-
-    .chat-name {
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .chat-time {
-      font-size: 10px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .chat-preview {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .unread {
-      background: var(--primary);
-      color: white;
-      border-radius: 20px;
-      min-width: 19px;
-      height: 19px;
-      padding: 0 5px;
-      display: inline-grid;
-      place-items: center;
-      font-size: 10px;
-    }
-
-    .profile {
-      padding: 15px 18px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .profile-info {
-      flex: 1;
-    }
-
-    .profile-info strong {
-      font-size: 13px;
-    }
-
-    .profile-info p {
-      color: var(--green);
-      font-size: 11px;
-      margin-top: 5px;
-    }
-
-    /* Main chat */
-
-    .main {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      background:
-        radial-gradient(ellipse at 50% 30%, rgba(99,102,241,.07), transparent 55%),
-        var(--bg);
-    }
-
-    .chat-header {
-      height: 83px;
-      padding: 15px 24px;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(17,27,45,.8);
-    }
-
-    .header-info {
-      flex: 1;
-    }
-
-    .header-info h3 {
-      font-size: 15px;
-      margin-bottom: 7px;
-    }
-
-    .header-info p {
-      color: var(--green);
-      font-size: 11px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 26px 7%;
-      display: flex;
-      flex-direction: column;
-      gap: 17px;
-    }
-
-    .date-divider {
-      align-self: center;
-      font-size: 11px;
-      color: var(--muted);
-      background: var(--panel);
-      padding: 8px 15px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-
-    .message-row {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      max-width: 75%;
-    }
-
-    .message-row.mine {
-      align-self: flex-end;
-      align-items: flex-end;
-    }
-
-    .bubble {
-      background: var(--panel2);
-      padding: 13px 16px;
-      border-radius: 17px 17px 17px 5px;
-      font-size: 13px;
-      line-height: 1.9;
-      overflow-wrap: anywhere;
-    }
-
-    .mine .bubble {
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
-      border-radius: 17px 17px 5px 17px;
-    }
-
-    .message-meta {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 6px;
-      padding: 0 4px;
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .mine .message-meta {
-      color: #a5b4fc;
-    }
-
-    .read-status {
-      color: #38bdf8;
-    }
-
-    .typing {
-      display: none;
-      align-self: flex-start;
-      color: var(--muted);
-      font-size: 11px;
-      padding: 8px;
-    }
-
-    .typing.show {
-      display: block;
-    }
-
-    /* Composer */
-
-    .composer-wrap {
-      padding: 15px 6%;
-      background: rgba(17,27,45,.7);
-      border-top: 1px solid var(--border);
-    }
-
-    .composer {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 8px;
-    }
-
-    .composer input {
-      flex: 1;
-      width: 0;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: white;
-      padding: 10px;
-      font-size: 13px;
-    }
-
-    .composer input::placeholder {
-      color: #64748b;
-    }
-
-    .send-btn {
-      width: 43px;
-      height: 43px;
-      min-width: 43px;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: white;
-      font-size: 20px;
-      transition: .2s;
-    }
-
-    .send-btn:hover {
-      transform: scale(1.05);
-    }
-
-    .attach-btn {
-      background: transparent;
-      color: var(--muted);
-      font-size: 21px;
-      width: 35px;
-    }
-
-    .empty-state {
-      display: none;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      flex-direction: column;
-      gap: 12px;
-      color: var(--muted);
-    }
-
-    .empty-state span {
-      font-size: 55px;
-    }
-
-    /* Mobile */
-
-    .back-btn {
-      display: none;
-    }
-
-    @media (max-width: 700px) {
-      .sidebar {
-        width: 100%;
-        min-width: 0;
-        border-left: none;
-      }
-
-      .main {
-        display: none;
-        width: 100%;
-      }
-
-      .app.mobile-chat-open .sidebar {
-        display: none;
-      }
-
-      .app.mobile-chat-open .main {
-        display: flex;
-      }
-
-      .back-btn {
-        display: block;
-      }
-
-      .chat-header {
-        padding: 12px;
-        height: 72px;
-      }
-
-      .header-actions .icon-btn {
-        width: 35px;
-        height: 35px;
-      }
-
-      .messages {
-        padding: 20px 14px;
-      }
-
-      .message-row {
-        max-width: 88%;
-      }
-
-      .composer-wrap {
-        padding: 10px;
-      }
-
-      .topbar {
-        padding: 16px;
-      }
-    }
-
-    @media (min-width: 701px) {
-      .sidebar {
-        display: flex !important;
-      }
-
-      .main {
-        display: flex !important;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>پیام‌رسان نوا</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1120;color:#f1f5f9;font:14px Tahoma,Arial;height:100dvh}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.app{height:100dvh;display:flex}
+.side{width:330px;background:#111b2d;border-left:1px solid #ffffff12;display:flex;flex-direction:column}
+.top{padding:18px;display:flex;justify-content:space-between;align-items:center;font-size:21px;font-weight:bold}
+.logo{display:flex;gap:10px;align-items:center}
+.logo i{font-style:normal;background:linear-gradient(135deg,#6366f1,#a855f7);padding:12px;border-radius:13px}
+.btn{background:#17243a;color:#fff;border-radius:11px;padding:10px 13px}
+.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border-radius:11px;padding:12px}
+.search{margin:0 14px 12px;width:calc(100% - 28px);padding:13px;background:#17243a;color:white;border:0;border-radius:12px}
+.label{padding:6px 18px;color:#94a3b8;font-size:12px}
+.list{flex:1;overflow:auto}
+.chat{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;border-right:3px solid transparent}
+.chat.active{background:#6366f122;border-right-color:#6366f1}
+.avatar{background:linear-gradient(135deg,#2563eb,#38bdf8);border-radius:15px;padding:13px;font-size:20px}
+.ci{flex:1;min-width:0}
+.ci b{display:block;margin-bottom:7px}
+.ci small{color:#94a3b8;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile{padding:14px;border-top:1px solid #ffffff12;display:flex;justify-content:space-between;align-items:center}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 30%,#6366f111,transparent 55%),#0b1120}
+.head{padding:14px 20px;display:flex;align-items:center;gap:12px;background:#111b2dcc;border-bottom:1px solid #ffffff12}
+.head .ci{flex:1}
+.head small{color:#22c55e}
+.banner{display:none;padding:12px 16px;background:linear-gradient(100deg,#6d28d9,#4f46e5);gap:10px;line-height:1.8}
+.banner.show{display:flex}
+.banner span{flex:1}
+.messages{flex:1;overflow:auto;padding:22px 7%;display:flex;flex-direction:column;gap:13px}
+.empty{margin:auto;text-align:center;color:#94a3b8;line-height:2}
+.msg{max-width:78%;align-self:flex-start}
+.msg.mine{align-self:flex-end}
+.bubble{padding:12px 15px;background:#17243a;border-radius:16px 16px 16px 5px;line-height:1.8;overflow-wrap:anywhere;white-space:pre-wrap}
+.mine .bubble{background:linear-gradient(135deg,#4f46e5,#6366f1);border-radius:16px 16px 5px 16px}
+.meta{font-size:10px;color:#94a3b8;margin:5px}
+.composer{padding:12px 6%;background:#111b2dbb;border-top:1px solid #ffffff12;display:flex;gap:8px}
+.composer input{flex:1;min-width:0;padding:13px;background:#17243a;border:0;border-radius:12px;color:white;outline:0}
+.modalbg{display:none;position:fixed;inset:0;background:#000b;z-index:5;align-items:center;justify-content:center;padding:18px}
+.modalbg.show{display:flex}
+.modal{width:min(440px,100%);max-height:90dvh;overflow:auto;background:#111b2d;border:1px solid #ffffff15;border-radius:19px;padding:22px}
+.modal h2{margin-top:0}
+.modal p{color:#94a3b8;font-size:12px;line-height:1.9}
+.field{width:100%;margin:7px 0;padding:13px;background:#17243a;color:white;border:1px solid #ffffff12;border-radius:11px;outline:0}
+.wide{width:100%;margin-top:8px}
+.notice{color:#fca5a5;font-size:12px;line-height:1.8;white-space:pre-wrap}
+.tools{display:none;padding:12px;border-top:1px solid #ffffff12}
+.tools.show{display:block}
+.adrow{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #ffffff12}
+.adrow span{flex:1;overflow-wrap:anywhere}
+.adrow button{background:#17243a;color:white;border-radius:8px;padding:7px}
+@media(max-width:700px){
+.side{width:100%;border:0}
+.main{display:none}
+.app.open .side{display:none}
+.app.open .main{display:flex}
+.head{padding:10px}
+.messages{padding:16px 12px}
+.msg{max-width:90%}
+.composer{padding:9px}
+.back{display:inline-block!important}
+}
+@media(min-width:701px){.side,.main{display:flex!important}}
+</style>
 </head>
-
 <body>
-
 <div class="app" id="app">
+<aside class="side">
+<div class="top">
+<div class="logo"><i>✉</i> نوا پیام</div>
+<button class="btn" id="newBtn">＋</button>
+</div>
+<input class="search" id="search" placeholder="جستجو در گفتگوها...">
+<div class="label">گفتگوهای اخیر</div>
+<div class="list" id="list"></div>
+<div class="tools" id="ownerTools">
+<button class="primary wide" id="ownerBtn">✦ پنل مالک نوا</button>
+</div>
+<div class="profile">
+<span id="profile">مهمان نوا</span>
+<button class="btn" id="accountBtn">حساب ⚙</button>
+</div>
+</aside>
+<main class="main">
+<header class="head">
+<button class="btn back" id="back" style="display:none">→</button>
+<div class="avatar">✉</div>
+<div class="ci">
+<b id="headName">به نوا پیام خوش آمدی</b>
+<small id="headStatus">برای شروع وارد حساب شو</small>
+</div>
+<button class="btn" id="newBtn2">＋</button>
+</header>
+<div class="banner" id="banner">
+<span id="bannerText"></span>
+<button class="btn" id="hideBanner">×</button>
+</div>
+<section class="messages" id="messages">
+<div class="empty">💬<h3>پیام‌رسان نوا</h3><p>برای شروع، وارد حساب شو یا گفتگوی جدید بساز.</p></div>
+</section>
+<form class="composer" id="sendForm">
+<input id="message" maxlength="5000" placeholder="پیامت رو بنویس..." autocomplete="off">
+<button class="primary">ارسال ➤</button>
+</form>
+</main>
+</div>
 
-  <aside class="sidebar">
+<div class="modalbg show" id="auth">
+<div class="modal">
+<h2>ورود به نوا پیام</h2>
+<p>شماره موبایل را وارد کن تا کد تأیید پیامکی ارسال شود.</p>
+<input class="field" id="phone" inputmode="tel" placeholder="مثلاً 09924045383">
+<div id="codeBox" hidden>
+<input class="field" id="code" inputmode="numeric" placeholder="کد پیامک‌شده">
+<input class="field" id="displayName" maxlength="80" placeholder="نام نمایشی (اختیاری)">
+</div>
+<button class="primary wide" id="authSubmit">ارسال کد تأیید</button>
+<button class="btn wide" id="authClose">فعلاً نه</button>
+<div class="notice" id="authNotice"></div>
+</div>
+</div>
 
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-icon">✉</div>
-        <span>نوا پیام</span>
-      </div>
-      <button class="icon-btn" id="newChatBtn" title="گفتگوی جدید">＋</button>
-    </div>
+<div class="modalbg" id="newModal">
+<div class="modal">
+<h2>گفتگوی جدید</h2>
+<p>شماره فردی را وارد کن که قبلاً در نوا ثبت‌نام کرده است.</p>
+<input class="field" id="targetPhone" inputmode="tel" placeholder="شماره موبایل">
+<button class="primary wide" id="findUser">جستجو و شروع گفتگو</button>
+<button class="btn wide" data-close="newModal">بستن</button>
+<div class="notice" id="newNotice"></div>
+</div>
+</div>
 
-    <div class="search-box">
-      <span class="search-icon">⌕</span>
-      <input type="text" id="searchInput" placeholder="جستجو در گفتگوها...">
-    </div>
-
-    <div class="section-title">گفتگوهای اخیر</div>
-
-    <div class="chat-list" id="chatList">
-
-      <div class="chat-item active"
-           data-id="0"
-           data-name="علی محمدی"
-           data-avatar="👨🏻"
-           data-color="blue"
-           data-status="آنلاین">
-        <div class="avatar blue">👨🏻<span class="online-dot"></span></div>
-        <div class="chat-info">
-          <div class="chat-name-row">
-            <span class="chat-name">علی محمدی</span>
-            <span class="chat-time">۱۴:۳۲</span>
-          </div>
-          <div class="chat-preview">سلام، خوبی؟</div>
-        </div>
-        <span class="unread">2</span>
-      </div>
-
-      <div class="chat-item"
-           data-id="1"
-           data-name="سارا احمدی"
-           data-avatar="👩🏻"
-           data-color="pink"
-           data-status="آنلاین">
-        <div class="avatar pink">👩🏻<span class="online-dot"></span></div>
-        <div class="chat-info">
-          <div class="chat-name-row">
-            <span class="chat-name">سارا احمدی</span>
-            <span class="chat-time">۱۳:۵۰</span>
-          </div>
-          <div class="chat-preview">عکس‌ها رو فرستادم 📷</div>
-        </div>
-      </div>
-
-      <div class="chat-item"
-           data-id="2"
-           data-name="گروه دوستان"
-           data-avatar="👥"
-           data-color="purple"
-           data-status="۱۲ عضو">
-        <div class="avatar purple">👥</div>
-        <div class="chat-info">
-          <div class="chat-name-row">
-            <span class="chat-name">گروه دوستان</span>
-            <span class="chat-time">۱۲:۴۰</span>
-          </div>
-          <div class="chat-preview">رضا: امشب کجا بریم؟</div>
-        </div>
-        <span class="unread">5</span>
-      </div>
-
-      <div class="chat-item"
-           data-id="3"
-           data-name="رضا کریمی"
-           data-avatar="🧑🏻"
-           data-color="orange"
-           data-status="آخرین بازدید اخیراً">
-        <div class="avatar orange">🧑🏻</div>
-        <div class="chat-info">
-          <div class="chat-name-row">
-            <span class="chat-name">رضا کریمی</span>
-            <span class="chat-time">دیروز</span>
-          </div>
-          <div class="chat-preview">باشه، منتظرم 👍</div>
-        </div>
-      </div>
-
-      <div class="chat-item"
-           data-id="4"
-           data-name="پشتیبانی"
-           data-avatar="🎧"
-           data-color="green"
-           data-status="پاسخگویی فعال">
-        <div class="avatar green">🎧</div>
-        <div class="chat-info">
-          <div class="chat-name-row">
-            <span class="chat-name">پشتیبانی</span>
-            <span class="chat-time">شنبه</span>
-          </div>
-          <div class="chat-preview">چطور می‌تونیم کمکت کنیم؟</div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="profile">
-      <div class="avatar purple">👤</div>
-      <div class="profile-info">
-        <strong>کاربر نوا</strong>
-        <p>● حساب من</p>
-      </div>
-      <button class="icon-btn" id="settingsBtn" title="تنظیمات">⚙</button>
-    </div>
-
-  </aside>
-
-  <main class="main">
-
-    <header class="chat-header">
-      <button class="icon-btn back-btn" id="backBtn">→</button>
-
-      <div class="avatar blue" id="headerAvatar">
-        👨🏻<span class="online-dot"></span>
-      </div>
-
-      <div class="header-info">
-        <h3 id="headerName">علی محمدی</h3>
-        <p id="headerStatus">آنلاین</p>
-      </div>
-
-      <div class="header-actions">
-        <button class="icon-btn" id="callBtn" title="تماس">☎</button>
-        <button class="icon-btn" id="videoBtn" title="تماس تصویری">▣</button>
-        <button class="icon-btn" id="moreBtn" title="بیشتر">⋮</button>
-      </div>
-    </header>
-
-    <section class="messages" id="messages">
-
-      <div class="date-divider">امروز</div>
-
-      <div class="message-row">
-        <div class="bubble">سلام داداش! 👋</div>
-        <div class="message-meta">۱۴:۲۸</div>
-      </div>
-
-      <div class="message-row">
-        <div class="bubble">چه خبر؟ خوبی؟</div>
-        <div class="message-meta">۱۴:۲۹</div>
-      </div>
-
-      <div class="message-row mine">
-        <div class="bubble">سلام رفیق، مرسی تو خوبی؟ 😎</div>
-        <div class="message-meta">۱۴:۳۰ <span class="read-status">✓✓</span></div>
-      </div>
-
-      <div class="message-row mine">
-        <div class="bubble">چه کارا می‌کنی؟</div>
-        <div class="message-meta">۱۴:۳۱ <span class="read-status">✓✓</span></div>
-      </div>
-
-      <div class="message-row">
-        <div class="bubble">سلام، خوبی؟</div>
-        <div class="message-meta">۱۴:۳۲</div>
-      </div>
-
-      <div class="typing" id="typingIndicator">در حال نوشتن پیام...</div>
-
-    </section>
-
-    <div class="empty-state" id="emptyState">
-      <span>💬</span>
-      <h3>هنوز پیامی وجود ندارد</h3>
-      <p>اولین پیام این گفتگو را ارسال کن.</p>
-    </div>
-
-    <footer class="composer-wrap">
-      <form class="composer" id="messageForm">
-        <button type="button" class="attach-btn" id="attachBtn" title="پیوست">＋</button>
-
-        <input
-          type="text"
-          id="messageInput"
-          placeholder="پیامت رو بنویس..."
-          autocomplete="off"
-          maxlength="5000"
-        >
-
-        <button type="button" class="attach-btn" id="emojiBtn" title="ایموجی">☺</button>
-
-        <button type="submit" class="send-btn" title="ارسال پیام">➤</button>
-      </form>
-    </footer>
-
-  </main>
-
+<div class="modalbg" id="ownerModal">
+<div class="modal">
+<h2>پنل مالک نوا</h2>
+<p>متن تبلیغ یا اطلاعیه در بالای پیام‌رسان نمایش داده می‌شود.</p>
+<textarea class="field" id="adText" maxlength="500" rows="3" placeholder="متن تبلیغ..."></textarea>
+<button class="primary wide" id="publish">انتشار تبلیغ</button>
+<div id="adList"></div>
+<button class="btn wide" data-close="ownerModal">بستن</button>
+<div class="notice" id="ownerNotice"></div>
+</div>
 </div>
 
 <script>
-  const app = document.getElementById("app");
-  const chatList = document.getElementById("chatList");
-  const messages = document.getElementById("messages");
-  const messageForm = document.getElementById("messageForm");
-  const messageInput = document.getElementById("messageInput");
-  const searchInput = document.getElementById("searchInput");
-  const typingIndicator = document.getElementById("typingIndicator");
-  const emptyState = document.getElementById("emptyState");
+const API="https://nova-messenger-api-2.onrender.com";
+const $=id=>document.getElementById(id);
+let token=localStorage.getItem("nova_token")||"",me=null,chats=[],active=null,lastId=0,authStep=1,poll=null;
 
-  let activeChatId = "0";
-  let chatCounter = 5;
+function headers(){
+return {"Content-Type":"application/json",...(token?{"Authorization":"Bearer "+token}:{})};
+}
+async function api(path,opts={}){
+let r=await fetch(API+path,{...opts,headers:{...headers(),...(opts.headers||{})}});
+let d={};
+try{d=await r.json()}catch{}
+if(!r.ok)throw Error(d.error||"ارتباط با سرور ناموفق بود.");
+return d;
+}
+function note(id,t){$(id).textContent=t||""}
+function modal(id,on=true){$(id).classList.toggle("show",on)}
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>modal(b.dataset.close,false));
+$("authClose").onclick=()=>modal("auth",false);
 
-  const chatMessages = {
-    "0": [
-      { text: "سلام داداش! 👋", mine: false, time: "۱۴:۲۸" },
-      { text: "چه خبر؟ خوبی؟", mine: false, time: "۱۴:۲۹" },
-      { text: "سلام رفیق، مرسی تو خوبی؟ 😎", mine: true, time: "۱۴:۳۰" },
-      { text: "چه کارا می‌کنی؟", mine: true, time: "۱۴:۳۱" },
-      { text: "سلام، خوبی؟", mine: false, time: "۱۴:۳۲" }
-    ],
-    "1": [
-      { text: "سلام، وقتت بخیر 🌸", mine: false, time: "۱۳:۴۸" },
-      { text: "عکس‌ها رو فرستادم 📷", mine: false, time: "۱۳:۵۰" }
-    ],
-    "2": [
-      { text: "سلام به همه دوستان! 👋", mine: false, time: "۱۲:۳۵" },
-      { text: "رضا: امشب کجا بریم؟", mine: false, time: "۱۲:۴۰" }
-    ],
-    "3": [
-      { text: "فردا می‌بینمت.", mine: false, time: "۱۷:۲۰" },
-      { text: "باشه، منتظرم 👍", mine: true, time: "۱۷:۲۲" }
-    ],
-    "4": [
-      { text: "به پشتیبانی نوا خوش آمدید.", mine: false, time: "۱۰:۰۰" },
-      { text: "چطور می‌تونیم کمکت کنیم؟", mine: false, time: "۱۰:۰۱" }
-    ]
-  };
+$("authSubmit").onclick=async()=>{
+let phone=$("phone").value.trim(),code=$("code").value.trim();
+$("authSubmit").disabled=true;
+note("authNotice","در حال ارتباط با سرور...");
+try{
+if(authStep===1){
+await api("/send-code",{method:"POST",body:JSON.stringify({phone})});
+authStep=2;
+$("codeBox").hidden=false;
+$("authSubmit").textContent="تأیید کد و ورود";
+note("authNotice","درخواست ثبت شد؛ کد پیامک را وارد کن.");
+}else{
+let d=await api("/verify-code",{method:"POST",body:JSON.stringify({phone,code})});
+token=d.token;
+localStorage.setItem("nova_token",token);
+me=d.user;
+let name=$("displayName").value.trim();
+if(name){
+await api("/me",{method:"PATCH",body:JSON.stringify({name})});
+me.name=name;
+}
+modal("auth",false);
+await init();
+}
+}catch(e){note("authNotice",e.message)}
+finally{$("authSubmit").disabled=false}
+};
 
-  function getTime() {
-    return new Intl.DateTimeFormat("fa-IR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    }).format(new Date());
-  }
+$("accountBtn").onclick=()=>{
+if(!me){modal("auth");return}
+if(confirm("از حساب خارج شوی؟")){
+localStorage.removeItem("nova_token");
+location.reload();
+}
+};
 
-  function createMessage(message) {
-    const row = document.createElement("div");
-    row.className = "message-row" + (message.mine ? " mine" : "");
+$("newBtn").onclick=$("newBtn2").onclick=()=>{
+if(!me){modal("auth");return}
+note("newNotice","");
+modal("newModal");
+};
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    bubble.textContent = message.text;
+$("findUser").onclick=async()=>{
+note("newNotice","در حال جستجو...");
+try{
+let d=await api("/users/search?phone="+encodeURIComponent($("targetPhone").value.trim()));
+if(!d.users.length){note("newNotice","کاربر پیدا نشد؛ ابتدا باید ثبت‌نام کند.");return}
+let c=await api("/conversations",{method:"POST",body:JSON.stringify({user_id:d.users[0].id})});
+modal("newModal",false);
+await loadChats();
+await openChat(c.conversation_id);
+}catch(e){note("newNotice",e.message)}
+};
 
-    const meta = document.createElement("div");
-    meta.className = "message-meta";
-    meta.append(document.createTextNode(message.time));
+function time(v){
+try{return new Intl.DateTimeFormat("fa-IR",{hour:"2-digit",minute:"2-digit"}).format(new Date(v))}
+catch{return ""}
+}
 
-    if (message.mine) {
-      const ticks = document.createElement("span");
-      ticks.className = "read-status";
-      ticks.textContent = "✓";
-      meta.appendChild(ticks);
-    }
+function renderChats(){
+let box=$("list");
+box.replaceChildren();
+let filtered=chats.filter(c=>(c.title+" "+c.last_message).includes($("search").value));
+if(!filtered.length){
+box.innerHTML='<div style="padding:20px;color:#94a3b8;font-size:12px">هنوز گفتگویی نداری. روی + بزن.</div>';
+return;
+}
+filtered.forEach(c=>{
+let item=document.createElement("div");
+item.className="chat"+(c.id===active?" active":"");
+let av=document.createElement("div");
+av.className="avatar";
+av.textContent="👤";
+let ci=document.createElement("div");
+ci.className="ci";
+let b=document.createElement("b");
+b.textContent=c.title;
+let small=document.createElement("small");
+small.textContent=c.last_message||"هنوز پیامی نیست";
+ci.append(b,small);
+item.append(av,ci);
+item.onclick=()=>openChat(c.id);
+box.append(item);
+});
+}
+$("search").oninput=renderChats;
 
-    row.append(bubble, meta);
-    return row;
-  }
+async function loadChats(){
+let d=await api("/conversations");
+chats=d.conversations;
+renderChats();
+}
 
-  function renderMessages() {
-    messages.replaceChildren();
+function addMessage(m){
+let row=document.createElement("div");
+row.className="msg"+(m.mine?" mine":"");
+let bubble=document.createElement("div");
+bubble.className="bubble";
+bubble.textContent=m.text;
+let meta=document.createElement("div");
+meta.className="meta";
+meta.textContent=(m.mine?"شما · ":"")+time(m.created_at);
+row.append(bubble,meta);
+$("messages").append(row);
+}
 
-    const divider = document.createElement("div");
-    divider.className = "date-divider";
-    divider.textContent = "امروز";
-    messages.appendChild(divider);
+async function loadMessages(initial=false){
+if(!active)return;
+let d=await api(`/conversations/${active}/messages?after=${initial?0:lastId}`);
+if(initial){
+$("messages").replaceChildren();
+lastId=0;
+}
+d.messages.forEach(m=>{
+addMessage(m);
+lastId=Math.max(lastId,m.id);
+});
+$("messages").scrollTop=$("messages").scrollHeight;
+}
 
-    const currentMessages = chatMessages[activeChatId] || [];
+async function openChat(id){
+active=id;
+let c=chats.find(x=>x.id===id);
+$("headName").textContent=c?c.title:"گفتگو";
+$("headStatus").textContent="گفتگوی نوا";
+$("app").classList.add("open");
+renderChats();
+try{await loadMessages(true)}
+catch(e){$("messages").textContent=e.message}
+if(poll)clearInterval(poll);
+poll=setInterval(async()=>{
+try{await loadMessages();await loadChats()}
+catch{}
+},4000);
+}
 
-    currentMessages.forEach(message => {
-      messages.appendChild(createMessage(message));
-    });
+$("back").onclick=()=>$("app").classList.remove("open");
 
-    messages.appendChild(typingIndicator);
+$("sendForm").onsubmit=async e=>{
+e.preventDefault();
+let text=$("message").value.trim();
+if(!text)return;
+if(!me){modal("auth");return}
+if(!active){alert("ابتدا گفتگویی انتخاب کن.");return}
+$("message").value="";
+try{
+await api(`/conversations/${active}/messages`,{method:"POST",body:JSON.stringify({text})});
+await loadMessages();
+await loadChats();
+}catch(err){
+$("message").value=text;
+alert(err.message);
+}
+};
 
-    emptyState.style.display = currentMessages.length ? "none" : "flex";
-    messages.style.display = currentMessages.length ? "flex" : "none";
+$("hideBanner").onclick=()=>$("banner").classList.remove("show");
 
-    messages.scrollTop = messages.scrollHeight;
-  }
+async function loadAds(){
+try{
+let d=await api("/announcements");
+if(d.announcements.length){
+$("bannerText").textContent=d.announcements[0].text;
+$("banner").classList.add("show");
+}else $("banner").classList.remove("show");
+}catch{}
+}
 
-  function openChat(item) {
-    activeChatId = item.dataset.id;
+async function init(){
+try{
+let d=await api("/me");
+me=d.user;
+$("profile").textContent=me.name+" · "+me.phone;
+$("ownerTools").classList.toggle("show",me.is_owner);
+await loadChats();
+await loadAds();
+}catch(e){
+localStorage.removeItem("nova_token");
+token="";
+me=null;
+modal("auth");
+}
+}
 
-    document.querySelectorAll(".chat-item").forEach(chat => {
-      chat.classList.toggle("active", chat === item);
-    });
+$("ownerBtn").onclick=async()=>{
+modal("ownerModal");
+note("ownerNotice","");
+await loadOwnerAds();
+};
 
-    document.getElementById("headerName").textContent = item.dataset.name;
-    document.getElementById("headerStatus").textContent = item.dataset.status;
+$("publish").onclick=async()=>{
+let text=$("adText").value.trim();
+if(!text)return note("ownerNotice","متن تبلیغ را بنویس.");
+try{
+await api("/owner/announcements",{method:"POST",body:JSON.stringify({text})});
+$("adText").value="";
+note("ownerNotice","تبلیغ منتشر شد.");
+await loadOwnerAds();
+await loadAds();
+}catch(e){note("ownerNotice",e.message)}
+};
 
-    const avatar = document.getElementById("headerAvatar");
-    avatar.className = "avatar " + item.dataset.color;
-    avatar.textContent = item.dataset.avatar;
+async function loadOwnerAds(){
+if(!me?.is_owner)return;
+try{
+let d=await api("/owner/announcements"),box=$("adList");
+box.replaceChildren();
+d.announcements.forEach(a=>{
+let row=document.createElement("div");
+row.className="adrow";
+let span=document.createElement("span");
+span.textContent=(a.active?"فعال · ":"غیرفعال · ")+a.text;
+let toggle=document.createElement("button");
+toggle.textContent=a.active?"خاموش":"فعال";
+toggle.onclick=async()=>{
+try{
+await api(`/owner/announcements/${a.id}`,{method:"PATCH"});
+await loadOwnerAds();
+await loadAds();
+}catch(e){note("ownerNotice",e.message)}
+};
+let del=document.createElement("button");
+del.textContent="حذف";
+del.onclick=async()=>{
+if(!confirm("حذف شود؟"))return;
+try{
+await api(`/owner/announcements/${a.id}`,{method:"DELETE"});
+await loadOwnerAds();
+await loadAds();
+}catch(e){note("ownerNotice",e.message)}
+};
+row.append(span,toggle,del);
+box.append(row);
+});
+}catch(e){note("ownerNotice",e.message)}
+}
 
-    if (item.dataset.status === "آنلاین") {
-      const dot = document.createElement("span");
-      dot.className = "online-dot";
-      avatar.appendChild(dot);
-    }
-
-    const unread = item.querySelector(".unread");
-    if (unread) unread.remove();
-
-    renderMessages();
-
-    if (window.innerWidth <= 700) {
-      app.classList.add("mobile-chat-open");
-    }
-  }
-
-  chatList.addEventListener("click", event => {
-    const item = event.target.closest(".chat-item");
-    if (item) openChat(item);
-  });
-
-  messageForm.addEventListener("submit", event => {
-    event.preventDefault();
-
-    const text = messageInput.value.trim();
-    if (!text) return;
-
-    if (!chatMessages[activeChatId]) {
-      chatMessages[activeChatId] = [];
-    }
-
-    const message = {
-      text,
-      mine: true,
-      time: getTime()
-    };
-
-    chatMessages[activeChatId].push(message);
-    messages.insertBefore(createMessage(message), typingIndicator);
-
-    emptyState.style.display = "none";
-    messages.style.display = "flex";
-    messages.scrollTop = messages.scrollHeight;
-
-    const activeItem = document.querySelector(
-      '.chat-item[data-id="' + activeChatId + '"]'
-    );
-
-    if (activeItem) {
-      activeItem.querySelector(".chat-preview").textContent = text;
-      activeItem.querySelect
+(async()=>{
+await loadAds();
+if(token)await init();
+else renderChats();
+})();
+</script>
+</body>
+</html>
