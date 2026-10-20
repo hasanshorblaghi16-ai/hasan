@@ -1,188 +1,864 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>خبرنما | اخبار ایران و جهان</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#0b0f17;color:#f3f5fa;font-family:Tahoma,Arial,sans-serif}
-header{background:#141b29;border-bottom:2px solid #e63946;padding:20px}
-.wrap{max-width:1000px;margin:auto;padding:16px}
-.logo{font-size:29px;font-weight:bold}.logo span{color:#ff4655}
-.sub,.meta,.status{font-size:12px;color:#9ca9bd;line-height:2}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
-button{background:#263146;color:white;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
-button.active{background:#e63946}
-button:disabled{opacity:.5}
-input{width:100%;padding:13px;border-radius:9px;border:1px solid #303b50;background:#151c29;color:white;margin:14px 0}
-.news{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.card{background:#151c29;border:1px solid #293348;border-radius:12px;padding:16px;overflow-wrap:anywhere}
-.card h2{font-size:17px;line-height:1.9}
-.card p{font-size:14px;color:#c2cada;line-height:2}
-a{color:#ff6975;text-decoration:none}
-a:hover{text-decoration:underline}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <title>پیام‌رسان نوا</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0b1120;
+      --panel: #111b2d;
+      --panel2: #17243a;
+      --primary: #6366f1;
+      --primary2: #818cf8;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,.07);
+      --green: #22c55e;
+    }
+
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+    }
+
+    .app {
+      display: flex;
+      width: 100%;
+      height: 100dvh;
+      max-width: 1600px;
+      margin: auto;
+    }
+
+    /* Sidebar */
+
+    .sidebar {
+      width: 350px;
+      min-width: 300px;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      padding: 22px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      color: var(--text);
+      background: var(--panel2);
+      font-size: 19px;
+      transition: .2s;
+    }
+
+    .icon-btn:hover {
+      background: #293953;
+    }
+
+    .search-box {
+      margin: 0 16px 16px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--panel2);
+      border: 1px solid transparent;
+      outline: none;
+      color: white;
+      border-radius: 14px;
+      padding: 14px 42px 14px 14px;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 14px;
+      top: 13px;
+      color: var(--muted);
+    }
+
+    .section-title {
+      padding: 5px 20px 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chat-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: .2s;
+      border-right: 3px solid transparent;
+    }
+
+    .chat-item:hover {
+      background: rgba(255,255,255,.035);
+    }
+
+    .chat-item.active {
+      background: rgba(99,102,241,.13);
+      border-right-color: var(--primary);
+    }
+
+    .avatar {
+      width: 49px;
+      height: 49px;
+      min-width: 49px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      position: relative;
+      background: linear-gradient(135deg, #334155, #475569);
+    }
+
+    .avatar.purple { background: linear-gradient(135deg,#7c3aed,#c084fc); }
+    .avatar.blue { background: linear-gradient(135deg,#2563eb,#38bdf8); }
+    .avatar.orange { background: linear-gradient(135deg,#ea580c,#fbbf24); }
+    .avatar.green { background: linear-gradient(135deg,#059669,#4ade80); }
+    .avatar.pink { background: linear-gradient(135deg,#db2777,#fb7185); }
+
+    .online-dot {
+      position: absolute;
+      bottom: -2px;
+      left: -2px;
+      width: 12px;
+      height: 12px;
+      background: var(--green);
+      border: 2px solid var(--panel);
+      border-radius: 50%;
+    }
+
+    .chat-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chat-name {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .chat-time {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .chat-preview {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .unread {
+      background: var(--primary);
+      color: white;
+      border-radius: 20px;
+      min-width: 19px;
+      height: 19px;
+      padding: 0 5px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 10px;
+    }
+
+    .profile {
+      padding: 15px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-info strong {
+      font-size: 13px;
+    }
+
+    .profile-info p {
+      color: var(--green);
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    /* Main chat */
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(99,102,241,.07), transparent 55%),
+        var(--bg);
+    }
+
+    .chat-header {
+      height: 83px;
+      padding: 15px 24px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(17,27,45,.8);
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .header-info h3 {
+      font-size: 15px;
+      margin-bottom: 7px;
+    }
+
+    .header-info p {
+      color: var(--green);
+      font-size: 11px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 26px 7%;
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+    }
+
+    .date-divider {
+      align-self: center;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--panel);
+      padding: 8px 15px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .message-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 75%;
+    }
+
+    .message-row.mine {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .bubble {
+      background: var(--panel2);
+      padding: 13px 16px;
+      border-radius: 17px 17px 17px 5px;
+      font-size: 13px;
+      line-height: 1.9;
+      overflow-wrap: anywhere;
+    }
+
+    .mine .bubble {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      border-radius: 17px 17px 5px 17px;
+    }
+
+    .message-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 6px;
+      padding: 0 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .mine .message-meta {
+      color: #a5b4fc;
+    }
+
+    .read-status {
+      color: #38bdf8;
+    }
+
+    .typing {
+      display: none;
+      align-self: flex-start;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 8px;
+    }
+
+    .typing.show {
+      display: block;
+    }
+
+    /* Composer */
+
+    .composer-wrap {
+      padding: 15px 6%;
+      background: rgba(17,27,45,.7);
+      border-top: 1px solid var(--border);
+    }
+
+    .composer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 8px;
+    }
+
+    .composer input {
+      flex: 1;
+      width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .composer input::placeholder {
+      color: #64748b;
+    }
+
+    .send-btn {
+      width: 43px;
+      height: 43px;
+      min-width: 43px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 20px;
+      transition: .2s;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .attach-btn {
+      background: transparent;
+      color: var(--muted);
+      font-size: 21px;
+      width: 35px;
+    }
+
+    .empty-state {
+      display: none;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--muted);
+    }
+
+    .empty-state span {
+      font-size: 55px;
+    }
+
+    /* Mobile */
+
+    .back-btn {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        border-left: none;
+      }
+
+      .main {
+        display: none;
+        width: 100%;
+      }
+
+      .app.mobile-chat-open .sidebar {
+        display: none;
+      }
+
+      .app.mobile-chat-open .main {
+        display: flex;
+      }
+
+      .back-btn {
+        display: block;
+      }
+
+      .chat-header {
+        padding: 12px;
+        height: 72px;
+      }
+
+      .header-actions .icon-btn {
+        width: 35px;
+        height: 35px;
+      }
+
+      .messages {
+        padding: 20px 14px;
+      }
+
+      .message-row {
+        max-width: 88%;
+      }
+
+      .composer-wrap {
+        padding: 10px;
+      }
+
+      .topbar {
+        padding: 16px;
+      }
+    }
+
+    @media (min-width: 701px) {
+      .sidebar {
+        display: flex !important;
+      }
+
+      .main {
+        display: flex !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header><div class="wrap">
- <div class="logo">خبر<span>نما</span></div>
- <div class="sub">آخرین خبرهای ایران و جهان</div>
- <nav id="filters">
-  <button class="active" data-cat="همه">همه خبرها</button>
-  <button data-cat="ایران">ایران</button>
-  <button data-cat="جهان">جهان</button>
-  <button data-cat="ویدیو">ویدیو</button>
- </nav>
-</div></header>
 
-<main class="wrap">
- <input id="search" placeholder="جست‌وجو در خبرها...">
- <p id="status" class="status">در حال اتصال به منابع خبری...</p>
- <button id="refresh">دریافت دوباره خبرها</button>
- <section id="news" class="news"></section>
-</main>
+<div class="app" id="app">
 
-<footer class="wrap status">
-خبرنما خبرها را از منابع اصلی گردآوری می‌کند. برای مطالعه کامل، منبع اصلی را باز کنید.
-</footer>
+  <aside class="sidebar">
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-icon">✉</div>
+        <span>نوا پیام</span>
+      </div>
+      <button class="icon-btn" id="newChatBtn" title="گفتگوی جدید">＋</button>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="جستجو در گفتگوها...">
+    </div>
+
+    <div class="section-title">گفتگوهای اخیر</div>
+
+    <div class="chat-list" id="chatList">
+
+      <div class="chat-item active"
+           data-id="0"
+           data-name="علی محمدی"
+           data-avatar="👨🏻"
+           data-color="blue"
+           data-status="آنلاین">
+        <div class="avatar blue">👨🏻<span class="online-dot"></span></div>
+        <div class="chat-info">
+          <div class="chat-name-row">
+            <span class="chat-name">علی محمدی</span>
+            <span class="chat-time">۱۴:۳۲</span>
+          </div>
+          <div class="chat-preview">سلام، خوبی؟</div>
+        </div>
+        <span class="unread">2</span>
+      </div>
+
+      <div class="chat-item"
+           data-id="1"
+           data-name="سارا احمدی"
+           data-avatar="👩🏻"
+           data-color="pink"
+           data-status="آنلاین">
+        <div class="avatar pink">👩🏻<span class="online-dot"></span></div>
+        <div class="chat-info">
+          <div class="chat-name-row">
+            <span class="chat-name">سارا احمدی</span>
+            <span class="chat-time">۱۳:۵۰</span>
+          </div>
+          <div class="chat-preview">عکس‌ها رو فرستادم 📷</div>
+        </div>
+      </div>
+
+      <div class="chat-item"
+           data-id="2"
+           data-name="گروه دوستان"
+           data-avatar="👥"
+           data-color="purple"
+           data-status="۱۲ عضو">
+        <div class="avatar purple">👥</div>
+        <div class="chat-info">
+          <div class="chat-name-row">
+            <span class="chat-name">گروه دوستان</span>
+            <span class="chat-time">۱۲:۴۰</span>
+          </div>
+          <div class="chat-preview">رضا: امشب کجا بریم؟</div>
+        </div>
+        <span class="unread">5</span>
+      </div>
+
+      <div class="chat-item"
+           data-id="3"
+           data-name="رضا کریمی"
+           data-avatar="🧑🏻"
+           data-color="orange"
+           data-status="آخرین بازدید اخیراً">
+        <div class="avatar orange">🧑🏻</div>
+        <div class="chat-info">
+          <div class="chat-name-row">
+            <span class="chat-name">رضا کریمی</span>
+            <span class="chat-time">دیروز</span>
+          </div>
+          <div class="chat-preview">باشه، منتظرم 👍</div>
+        </div>
+      </div>
+
+      <div class="chat-item"
+           data-id="4"
+           data-name="پشتیبانی"
+           data-avatar="🎧"
+           data-color="green"
+           data-status="پاسخگویی فعال">
+        <div class="avatar green">🎧</div>
+        <div class="chat-info">
+          <div class="chat-name-row">
+            <span class="chat-name">پشتیبانی</span>
+            <span class="chat-time">شنبه</span>
+          </div>
+          <div class="chat-preview">چطور می‌تونیم کمکت کنیم؟</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="profile">
+      <div class="avatar purple">👤</div>
+      <div class="profile-info">
+        <strong>کاربر نوا</strong>
+        <p>● حساب من</p>
+      </div>
+      <button class="icon-btn" id="settingsBtn" title="تنظیمات">⚙</button>
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="chat-header">
+      <button class="icon-btn back-btn" id="backBtn">→</button>
+
+      <div class="avatar blue" id="headerAvatar">
+        👨🏻<span class="online-dot"></span>
+      </div>
+
+      <div class="header-info">
+        <h3 id="headerName">علی محمدی</h3>
+        <p id="headerStatus">آنلاین</p>
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="callBtn" title="تماس">☎</button>
+        <button class="icon-btn" id="videoBtn" title="تماس تصویری">▣</button>
+        <button class="icon-btn" id="moreBtn" title="بیشتر">⋮</button>
+      </div>
+    </header>
+
+    <section class="messages" id="messages">
+
+      <div class="date-divider">امروز</div>
+
+      <div class="message-row">
+        <div class="bubble">سلام داداش! 👋</div>
+        <div class="message-meta">۱۴:۲۸</div>
+      </div>
+
+      <div class="message-row">
+        <div class="bubble">چه خبر؟ خوبی؟</div>
+        <div class="message-meta">۱۴:۲۹</div>
+      </div>
+
+      <div class="message-row mine">
+        <div class="bubble">سلام رفیق، مرسی تو خوبی؟ 😎</div>
+        <div class="message-meta">۱۴:۳۰ <span class="read-status">✓✓</span></div>
+      </div>
+
+      <div class="message-row mine">
+        <div class="bubble">چه کارا می‌کنی؟</div>
+        <div class="message-meta">۱۴:۳۱ <span class="read-status">✓✓</span></div>
+      </div>
+
+      <div class="message-row">
+        <div class="bubble">سلام، خوبی؟</div>
+        <div class="message-meta">۱۴:۳۲</div>
+      </div>
+
+      <div class="typing" id="typingIndicator">در حال نوشتن پیام...</div>
+
+    </section>
+
+    <div class="empty-state" id="emptyState">
+      <span>💬</span>
+      <h3>هنوز پیامی وجود ندارد</h3>
+      <p>اولین پیام این گفتگو را ارسال کن.</p>
+    </div>
+
+    <footer class="composer-wrap">
+      <form class="composer" id="messageForm">
+        <button type="button" class="attach-btn" id="attachBtn" title="پیوست">＋</button>
+
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="پیامت رو بنویس..."
+          autocomplete="off"
+          maxlength="5000"
+        >
+
+        <button type="button" class="attach-btn" id="emojiBtn" title="ایموجی">☺</button>
+
+        <button type="submit" class="send-btn" title="ارسال پیام">➤</button>
+      </form>
+    </footer>
+
+  </main>
+
+</div>
 
 <script>
-const feeds=[
- {name:"BBC فارسی",url:"https://feeds.bbci.co.uk/persian/rss.xml",cat:"ایران"},
- {name:"DW فارسی",url:"https://rss.dw.com/xml/rss-fa-all",cat:"جهان"},
- {name:"ایران اینترنشنال - یوتیوب",
-  url:"https://www.youtube.com/feeds/videos.xml?channel_id=UCat6bC0Wrqq9Bcq7EkH_yQw",
-  cat:"ویدیو"}
-];
+  const app = document.getElementById("app");
+  const chatList = document.getElementById("chatList");
+  const messages = document.getElementById("messages");
+  const messageForm = document.getElementById("messageForm");
+  const messageInput = document.getElementById("messageInput");
+  const searchInput = document.getElementById("searchInput");
+  const typingIndicator = document.getElementById("typingIndicator");
+  const emptyState = document.getElementById("emptyState");
 
-let allNews=[];
-let selectedCategory="همه";
+  let activeChatId = "0";
+  let chatCounter = 5;
 
-function clean(s=""){
- const d=document.createElement("div");
- d.innerHTML=s;
- return (d.textContent||"").replace(/\s+/g," ").trim();
-}
-
-function escapeHTML(s=""){
- return String(s).replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
-}
-
-async function getFeed(feed){
- // سرویس واسط برای تلاش جهت دور زدن محدودیت CORS
- const proxy="https://api.allorigins.win/raw?url="+encodeURIComponent(feed.url);
- const response=await fetch(proxy);
- if(!response.ok)throw Error("HTTP "+response.status);
-
- const xmlText=await response.text();
- const xml=new DOMParser().parseFromString(xmlText,"application/xml");
- if(xml.querySelector("parsererror"))throw Error("RSS نامعتبر است");
-
- const rssEntries=[...xml.querySelectorAll("item")];
-
- if(rssEntries.length){
-  return rssEntries.map(e=>({
-   title:clean(e.querySelector("title")?.textContent),
-   summary:clean(e.querySelector("description")?.textContent),
-   url:e.querySelector("link")?.textContent?.trim()||"",
-   date:e.querySelector("pubDate")?.textContent||"",
-   source:feed.name,
-   cat:feed.cat,
-   kind:feed.cat==="ویدیو"?"video":"news"
-  })).filter(n=>n.title&&/^https?:\/\//i.test(n.url));
- }
-
- const atomEntries=[...xml.querySelectorAll("entry")];
-
- return atomEntries.map(e=>{
-  const link=e.querySelector("link[rel='alternate']")||
-             e.querySelector("link[href]");
-  return {
-   title:clean(e.querySelector("title")?.textContent),
-   summary:clean(e.querySelector("summary")?.textContent||
-                 e.querySelector("content")?.textContent),
-   url:link?.getAttribute("href")||"",
-   date:e.querySelector("published")?.textContent||
-        e.querySelector("updated")?.textContent||"",
-   source:feed.name,
-   cat:feed.cat,
-   kind:"video"
+  const chatMessages = {
+    "0": [
+      { text: "سلام داداش! 👋", mine: false, time: "۱۴:۲۸" },
+      { text: "چه خبر؟ خوبی؟", mine: false, time: "۱۴:۲۹" },
+      { text: "سلام رفیق، مرسی تو خوبی؟ 😎", mine: true, time: "۱۴:۳۰" },
+      { text: "چه کارا می‌کنی؟", mine: true, time: "۱۴:۳۱" },
+      { text: "سلام، خوبی؟", mine: false, time: "۱۴:۳۲" }
+    ],
+    "1": [
+      { text: "سلام، وقتت بخیر 🌸", mine: false, time: "۱۳:۴۸" },
+      { text: "عکس‌ها رو فرستادم 📷", mine: false, time: "۱۳:۵۰" }
+    ],
+    "2": [
+      { text: "سلام به همه دوستان! 👋", mine: false, time: "۱۲:۳۵" },
+      { text: "رضا: امشب کجا بریم؟", mine: false, time: "۱۲:۴۰" }
+    ],
+    "3": [
+      { text: "فردا می‌بینمت.", mine: false, time: "۱۷:۲۰" },
+      { text: "باشه، منتظرم 👍", mine: true, time: "۱۷:۲۲" }
+    ],
+    "4": [
+      { text: "به پشتیبانی نوا خوش آمدید.", mine: false, time: "۱۰:۰۰" },
+      { text: "چطور می‌تونیم کمکت کنیم؟", mine: false, time: "۱۰:۰۱" }
+    ]
   };
- }).filter(n=>n.title&&/^https?:\/\//i.test(n.url));
-}
 
-function render(){
- const term=document.getElementById("search").value.trim().toLowerCase();
+  function getTime() {
+    return new Intl.DateTimeFormat("fa-IR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(new Date());
+  }
 
- const list=allNews.filter(n=>{
-  const matchesCategory=selectedCategory==="همه"||
-                        n.cat===selectedCategory;
-  const matchesSearch=(n.title+" "+n.summary+" "+n.source)
-                       .toLowerCase().includes(term);
-  return matchesCategory&&matchesSearch;
- });
+  function createMessage(message) {
+    const row = document.createElement("div");
+    row.className = "message-row" + (message.mine ? " mine" : "");
 
- document.getElementById("news").innerHTML=list.map(n=>`
-  <article class="card">
-   <div class="meta">${escapeHTML(n.source)} · ${escapeHTML(n.date)}</div>
-   <h2>${escapeHTML(n.title)}</h2>
-   <p>${escapeHTML(n.summary||"برای خواندن جزئیات، خبر اصلی را باز کنید.")}</p>
-   <a href="${escapeHTML(n.url)}" target="_blank" rel="noopener noreferrer">
-    مطالعه در منبع اصلی ←
-   </a>
-  </article>
- `).join("")||'<p class="status">خبری برای نمایش پیدا نشد.</p>';
-}
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = message.text;
 
-async function loadNews(){
- const status=document.getElementById("status");
- const refresh=document.getElementById("refresh");
- status.textContent="در حال دریافت خبرها از منابع...";
- refresh.disabled=true;
+    const meta = document.createElement("div");
+    meta.className = "message-meta";
+    meta.append(document.createTextNode(message.time));
 
- const results=await Promise.allSettled(feeds.map(getFeed));
- allNews=results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
+    if (message.mine) {
+      const ticks = document.createElement("span");
+      ticks.className = "read-status";
+      ticks.textContent = "✓";
+      meta.appendChild(ticks);
+    }
 
- const failed=results.filter(r=>r.status==="rejected").length;
- const successful=feeds.length-failed;
+    row.append(bubble, meta);
+    return row;
+  }
 
- allNews.sort((a,b)=>{
-  const da=Date.parse(a.date)||0;
-  const db=Date.parse(b.date)||0;
-  return db-da;
- });
+  function renderMessages() {
+    messages.replaceChildren();
 
- render();
+    const divider = document.createElement("div");
+    divider.className = "date-divider";
+    divider.textContent = "امروز";
+    messages.appendChild(divider);
 
- if(allNews.length){
-  status.textContent=`تعداد خبرها: ${allNews.length} | منابع پاسخ‌داده: ${successful} از ${feeds.length} | زمان بررسی: ${new Date().toLocaleString("fa-IR")}`+
-    (failed?` | ${failed} منبع خطا داد.`:"");
- }else{
-  status.textContent="هیچ خبری دریافت نشد. اتصال اینترنت، فیدها یا سرویس واسط ممکن است مشکل داشته باشد.";
- }
+    const currentMessages = chatMessages[activeChatId] || [];
 
- refresh.disabled=false;
-}
+    currentMessages.forEach(message => {
+      messages.appendChild(createMessage(message));
+    });
 
-document.getElementById("filters").addEventListener("click",e=>{
- if(!e.target.dataset.cat)return;
- selectedCategory=e.target.dataset.cat;
+    messages.appendChild(typingIndicator);
 
- document.querySelectorAll("#filters button").forEach(b=>
-  b.classList.toggle("active",b===e.target)
- );
+    emptyState.style.display = currentMessages.length ? "none" : "flex";
+    messages.style.display = currentMessages.length ? "flex" : "none";
 
- render();
-});
+    messages.scrollTop = messages.scrollHeight;
+  }
 
-document.getElementById("search").addEventListener("input",render);
-document.getElementById("refresh").addEventListener("click",loadNews);
+  function openChat(item) {
+    activeChatId = item.dataset.id;
 
-loadNews();
-</script>
-</body>
-</html>
+    document.querySelectorAll(".chat-item").forEach(chat => {
+      chat.classList.toggle("active", chat === item);
+    });
+
+    document.getElementById("headerName").textContent = item.dataset.name;
+    document.getElementById("headerStatus").textContent = item.dataset.status;
+
+    const avatar = document.getElementById("headerAvatar");
+    avatar.className = "avatar " + item.dataset.color;
+    avatar.textContent = item.dataset.avatar;
+
+    if (item.dataset.status === "آنلاین") {
+      const dot = document.createElement("span");
+      dot.className = "online-dot";
+      avatar.appendChild(dot);
+    }
+
+    const unread = item.querySelector(".unread");
+    if (unread) unread.remove();
+
+    renderMessages();
+
+    if (window.innerWidth <= 700) {
+      app.classList.add("mobile-chat-open");
+    }
+  }
+
+  chatList.addEventListener("click", event => {
+    const item = event.target.closest(".chat-item");
+    if (item) openChat(item);
+  });
+
+  messageForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const text = messageInput.value.trim();
+    if (!text) return;
+
+    if (!chatMessages[activeChatId]) {
+      chatMessages[activeChatId] = [];
+    }
+
+    const message = {
+      text,
+      mine: true,
+      time: getTime()
+    };
+
+    chatMessages[activeChatId].push(message);
+    messages.insertBefore(createMessage(message), typingIndicator);
+
+    emptyState.style.display = "none";
+    messages.style.display = "flex";
+    messages.scrollTop = messages.scrollHeight;
+
+    const activeItem = document.querySelector(
+      '.chat-item[data-id="' + activeChatId + '"]'
+    );
+
+    if (activeItem) {
+      activeItem.querySelector(".chat-preview").textContent = text;
+      activeItem.querySelect
