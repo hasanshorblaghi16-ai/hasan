@@ -57,6 +57,7 @@ button{cursor:pointer;border:0}
 .adrow{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #ffffff12}
 .adrow span{flex:1;overflow-wrap:anywhere}
 .adrow button{background:#17243a;color:white;border-radius:8px;padding:7px}
+.statusline{font-size:11px;color:#94a3b8;padding:0 14px 10px}
 @media(max-width:700px){
 .side{width:100%;border:0}
 .main{display:none}
@@ -84,11 +85,13 @@ button{cursor:pointer;border:0}
 <div class="tools" id="ownerTools">
 <button class="primary wide" id="ownerBtn">✦ پنل مالک نوا</button>
 </div>
+<div class="statusline" id="connectionStatus">در حال آماده‌سازی نوا...</div>
 <div class="profile">
 <span id="profile">مهمان نوا</span>
 <button class="btn" id="accountBtn">حساب ⚙</button>
 </div>
 </aside>
+
 <main class="main">
 <header class="head">
 <button class="btn back" id="back" style="display:none">→</button>
@@ -113,13 +116,13 @@ button{cursor:pointer;border:0}
 </main>
 </div>
 
-<div class="modalbg show" id="auth">
+<div class="modalbg" id="auth">
 <div class="modal">
 <h2>ورود به نوا پیام</h2>
 <p>شماره موبایل را وارد کن تا کد تأیید پیامکی ارسال شود.</p>
-<input class="field" id="phone" inputmode="tel" placeholder="مثلاً 09924045383">
+<input class="field" id="phone" inputmode="tel" autocomplete="tel" placeholder="مثلاً 09924045383">
 <div id="codeBox" hidden>
-<input class="field" id="code" inputmode="numeric" placeholder="کد پیامک‌شده">
+<input class="field" id="code" inputmode="numeric" autocomplete="one-time-code" placeholder="کد پیامک‌شده">
 <input class="field" id="displayName" maxlength="80" placeholder="نام نمایشی (اختیاری)">
 </div>
 <button class="primary wide" id="authSubmit">ارسال کد تأیید</button>
@@ -152,265 +155,511 @@ button{cursor:pointer;border:0}
 </div>
 
 <script>
-const API="https://nova-messenger-api-2.onrender.com";
-const $=id=>document.getElementById(id);
-let token=localStorage.getItem("nova_token")||"",me=null,chats=[],active=null,lastId=0,authStep=1,poll=null;
+const API = "https://nova-messenger-api-2.onrender.com";
+const $ = id => document.getElementById(id);
 
-function headers(){
-return {"Content-Type":"application/json",...(token?{"Authorization":"Bearer "+token}:{})};
-}
-async function api(path,opts={}){
-let r=await fetch(API+path,{...opts,headers:{...headers(),...(opts.headers||{})}});
-let d={};
-try{d=await r.json()}catch{}
-if(!r.ok)throw Error(d.error||"ارتباط با سرور ناموفق بود.");
-return d;
-}
-function note(id,t){$(id).textContent=t||""}
-function modal(id,on=true){$(id).classList.toggle("show",on)}
-document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>modal(b.dataset.close,false));
-$("authClose").onclick=()=>modal("auth",false);
+let token = localStorage.getItem("nova_token") || "";
+let me = null;
+let chats = [];
+let active = null;
+let lastId = 0;
+let authStep = 1;
+let poll = null;
+let initRunning = false;
+let retryTimer = null;
 
-$("authSubmit").onclick=async()=>{
-let phone=$("phone").value.trim(),code=$("code").value.trim();
-$("authSubmit").disabled=true;
-note("authNotice","در حال ارتباط با سرور...");
-try{
-if(authStep===1){
-await api("/send-code",{method:"POST",body:JSON.stringify({phone})});
-authStep=2;
-$("codeBox").hidden=false;
-$("authSubmit").textContent="تأیید کد و ورود";
-note("authNotice","درخواست ثبت شد؛ کد پیامک را وارد کن.");
-}else{
-let d=await api("/verify-code",{method:"POST",body:JSON.stringify({phone,code})});
-token=d.token;
-localStorage.setItem("nova_token",token);
-me=d.user;
-let name=$("displayName").value.trim();
-if(name){
-await api("/me",{method:"PATCH",body:JSON.stringify({name})});
-me.name=name;
-}
-modal("auth",false);
-await init();
-}
-}catch(e){note("authNotice",e.message)}
-finally{$("authSubmit").disabled=false}
-};
-
-$("accountBtn").onclick=()=>{
-if(!me){modal("auth");return}
-if(confirm("از حساب خارج شوی؟")){
-localStorage.removeItem("nova_token");
-location.reload();
-}
-};
-
-$("newBtn").onclick=$("newBtn2").onclick=()=>{
-if(!me){modal("auth");return}
-note("newNotice","");
-modal("newModal");
-};
-
-$("findUser").onclick=async()=>{
-note("newNotice","در حال جستجو...");
-try{
-let d=await api("/users/search?phone="+encodeURIComponent($("targetPhone").value.trim()));
-if(!d.users.length){note("newNotice","کاربر پیدا نشد؛ ابتدا باید ثبت‌نام کند.");return}
-let c=await api("/conversations",{method:"POST",body:JSON.stringify({user_id:d.users[0].id})});
-modal("newModal",false);
-await loadChats();
-await openChat(c.conversation_id);
-}catch(e){note("newNotice",e.message)}
-};
-
-function time(v){
-try{return new Intl.DateTimeFormat("fa-IR",{hour:"2-digit",minute:"2-digit"}).format(new Date(v))}
-catch{return ""}
+function headers() {
+  return {
+    "Content-Type": "application/json",
+    ...(token ? {"Authorization": "Bearer " + token} : {})
+  };
 }
 
-function renderChats(){
-let box=$("list");
-box.replaceChildren();
-let filtered=chats.filter(c=>(c.title+" "+c.last_message).includes($("search").value));
-if(!filtered.length){
-box.innerHTML='<div style="padding:20px;color:#94a3b8;font-size:12px">هنوز گفتگویی نداری. روی + بزن.</div>';
-return;
+async function api(path, opts = {}) {
+  let r;
+
+  try {
+    r = await fetch(API + path, {
+      ...opts,
+      headers: {...headers(), ...(opts.headers || {})}
+    });
+  } catch (err) {
+    const e = new Error("ارتباط با سرور برقرار نشد؛ ممکن است سرور در حال بیدارشدن باشد.");
+    e.networkError = true;
+    throw e;
+  }
+
+  let d = {};
+  try { d = await r.json(); } catch {}
+
+  if (!r.ok) {
+    const e = new Error(d.error || "درخواست به سرور ناموفق بود.");
+    e.status = r.status;
+    e.payload = d;
+    throw e;
+  }
+
+  return d;
 }
-filtered.forEach(c=>{
-let item=document.createElement("div");
-item.className="chat"+(c.id===active?" active":"");
-let av=document.createElement("div");
-av.className="avatar";
-av.textContent="👤";
-let ci=document.createElement("div");
-ci.className="ci";
-let b=document.createElement("b");
-b.textContent=c.title;
-let small=document.createElement("small");
-small.textContent=c.last_message||"هنوز پیامی نیست";
-ci.append(b,small);
-item.append(av,ci);
-item.onclick=()=>openChat(c.id);
-box.append(item);
+
+function note(id, text) {
+  $(id).textContent = text || "";
+}
+
+function modal(id, show = true) {
+  $(id).classList.toggle("show", show);
+}
+
+function setStatus(text) {
+  $("connectionStatus").textContent = text;
+}
+
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.onclick = () => modal(button.dataset.close, false);
 });
-}
-$("search").oninput=renderChats;
 
-async function loadChats(){
-let d=await api("/conversations");
-chats=d.conversations;
-renderChats();
-}
+$("authClose").onclick = () => modal("auth", false);
 
-function addMessage(m){
-let row=document.createElement("div");
-row.className="msg"+(m.mine?" mine":"");
-let bubble=document.createElement("div");
-bubble.className="bubble";
-bubble.textContent=m.text;
-let meta=document.createElement("div");
-meta.className="meta";
-meta.textContent=(m.mine?"شما · ":"")+time(m.created_at);
-row.append(bubble,meta);
-$("messages").append(row);
-}
+$("authSubmit").onclick = async () => {
+  const phone = $("phone").value.trim();
+  const code = $("code").value.trim();
 
-async function loadMessages(initial=false){
-if(!active)return;
-let d=await api(`/conversations/${active}/messages?after=${initial?0:lastId}`);
-if(initial){
-$("messages").replaceChildren();
-lastId=0;
-}
-d.messages.forEach(m=>{
-addMessage(m);
-lastId=Math.max(lastId,m.id);
-});
-$("messages").scrollTop=$("messages").scrollHeight;
-}
+  $("authSubmit").disabled = true;
+  note("authNotice", "در حال ارتباط با سرور...");
 
-async function openChat(id){
-active=id;
-let c=chats.find(x=>x.id===id);
-$("headName").textContent=c?c.title:"گفتگو";
-$("headStatus").textContent="گفتگوی نوا";
-$("app").classList.add("open");
-renderChats();
-try{await loadMessages(true)}
-catch(e){$("messages").textContent=e.message}
-if(poll)clearInterval(poll);
-poll=setInterval(async()=>{
-try{await loadMessages();await loadChats()}
-catch{}
-},4000);
-}
+  try {
+    if (authStep === 1) {
+      await api("/send-code", {
+        method: "POST",
+        body: JSON.stringify({phone})
+      });
 
-$("back").onclick=()=>$("app").classList.remove("open");
+      authStep = 2;
+      $("codeBox").hidden = false;
+      $("authSubmit").textContent = "تأیید کد و ورود";
+      note("authNotice", "درخواست ثبت شد؛ کد پیامک را وارد کن.");
+      $("code").focus();
+    } else {
+      const d = await api("/verify-code", {
+        method: "POST",
+        body: JSON.stringify({phone, code})
+      });
 
-$("sendForm").onsubmit=async e=>{
-e.preventDefault();
-let text=$("message").value.trim();
-if(!text)return;
-if(!me){modal("auth");return}
-if(!active){alert("ابتدا گفتگویی انتخاب کن.");return}
-$("message").value="";
-try{
-await api(`/conversations/${active}/messages`,{method:"POST",body:JSON.stringify({text})});
-await loadMessages();
-await loadChats();
-}catch(err){
-$("message").value=text;
-alert(err.message);
-}
+      if (!d.token) throw new Error("سرور توکن ورود برنگرداند.");
+
+      token = d.token;
+      localStorage.setItem("nova_token", token);
+      me = d.user;
+
+      const name = $("displayName").value.trim();
+
+      if (name) {
+        await api("/me", {
+          method: "PATCH",
+          body: JSON.stringify({name})
+        });
+        me.name = name;
+      }
+
+      modal("auth", false);
+      note("authNotice", "");
+      await init();
+    }
+  } catch (e) {
+    note("authNotice", e.message);
+  } finally {
+    $("authSubmit").disabled = false;
+  }
 };
 
-$("hideBanner").onclick=()=>$("banner").classList.remove("show");
+$("accountBtn").onclick = () => {
+  if (!me) {
+    modal("auth");
+    return;
+  }
 
-async function loadAds(){
-try{
-let d=await api("/announcements");
-if(d.announcements.length){
-$("bannerText").textContent=d.announcements[0].text;
-$("banner").classList.add("show");
-}else $("banner").classList.remove("show");
-}catch{}
-}
-
-async function init(){
-try{
-let d=await api("/me");
-me=d.user;
-$("profile").textContent=me.name+" · "+me.phone;
-$("ownerTools").classList.toggle("show",me.is_owner);
-await loadChats();
-await loadAds();
-}catch(e){
-localStorage.removeItem("nova_token");
-token="";
-me=null;
-modal("auth");
-}
-}
-
-$("ownerBtn").onclick=async()=>{
-modal("ownerModal");
-note("ownerNotice","");
-await loadOwnerAds();
+  if (confirm("از حساب خارج شوی؟")) {
+    // توکن فقط هنگام خروج آگاهانه کاربر حذف می‌شود.
+    localStorage.removeItem("nova_token");
+    token = "";
+    me = null;
+    if (poll) clearInterval(poll);
+    location.reload();
+  }
 };
 
-$("publish").onclick=async()=>{
-let text=$("adText").value.trim();
-if(!text)return note("ownerNotice","متن تبلیغ را بنویس.");
-try{
-await api("/owner/announcements",{method:"POST",body:JSON.stringify({text})});
-$("adText").value="";
-note("ownerNotice","تبلیغ منتشر شد.");
-await loadOwnerAds();
-await loadAds();
-}catch(e){note("ownerNotice",e.message)}
+$("newBtn").onclick = $("newBtn2").onclick = () => {
+  if (!me) {
+    modal("auth");
+    return;
+  }
+  note("newNotice", "");
+  modal("newModal");
 };
 
-async function loadOwnerAds(){
-if(!me?.is_owner)return;
-try{
-let d=await api("/owner/announcements"),box=$("adList");
-box.replaceChildren();
-d.announcements.forEach(a=>{
-let row=document.createElement("div");
-row.className="adrow";
-let span=document.createElement("span");
-span.textContent=(a.active?"فعال · ":"غیرفعال · ")+a.text;
-let toggle=document.createElement("button");
-toggle.textContent=a.active?"خاموش":"فعال";
-toggle.onclick=async()=>{
-try{
-await api(`/owner/announcements/${a.id}`,{method:"PATCH"});
-await loadOwnerAds();
-await loadAds();
-}catch(e){note("ownerNotice",e.message)}
+$("findUser").onclick = async () => {
+  note("newNotice", "در حال جستجو...");
+
+  try {
+    const d = await api(
+      "/users/search?phone=" + encodeURIComponent($("targetPhone").value.trim())
+    );
+
+    if (!d.users.length) {
+      note("newNotice", "کاربر پیدا نشد؛ ابتدا باید ثبت‌نام کند.");
+      return;
+    }
+
+    const c = await api("/conversations", {
+      method: "POST",
+      body: JSON.stringify({user_id: d.users[0].id})
+    });
+
+    modal("newModal", false);
+    await loadChats();
+    await openChat(c.conversation_id);
+  } catch (e) {
+    note("newNotice", e.message);
+  }
 };
-let del=document.createElement("button");
-del.textContent="حذف";
-del.onclick=async()=>{
-if(!confirm("حذف شود؟"))return;
-try{
-await api(`/owner/announcements/${a.id}`,{method:"DELETE"});
-await loadOwnerAds();
-await loadAds();
-}catch(e){note("ownerNotice",e.message)}
-};
-row.append(span,toggle,del);
-box.append(row);
-});
-}catch(e){note("ownerNotice",e.message)}
+
+function time(value) {
+  try {
+    return new Intl.DateTimeFormat("fa-IR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(new Date(value));
+  } catch {
+    return "";
+  }
 }
 
-(async()=>{
-await loadAds();
-if(token)await init();
-else renderChats();
+function renderChats() {
+  const box = $("list");
+  box.replaceChildren();
+
+  const query = $("search").value.trim().toLocaleLowerCase();
+  const filtered = chats.filter(c =>
+    (String(c.title || "") + " " + String(c.last_message || ""))
+      .toLocaleLowerCase().includes(query)
+  );
+
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.style.cssText = "padding:20px;color:#94a3b8;font-size:12px";
+    empty.textContent = me
+      ? "هنوز گفتگویی نداری. روی + بزن."
+      : "برای دیدن گفتگوها وارد حساب شو.";
+    box.append(empty);
+    return;
+  }
+
+  filtered.forEach(c => {
+    const item = document.createElement("div");
+    item.className = "chat" + (c.id === active ? " active" : "");
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = "👤";
+
+    const info = document.createElement("div");
+    info.className = "ci";
+
+    const title = document.createElement("b");
+    title.textContent = c.title || "گفتگو";
+
+    const small = document.createElement("small");
+    small.textContent = c.last_message || "هنوز پیامی نیست";
+
+    info.append(title, small);
+    item.append(avatar, info);
+    item.onclick = () => openChat(c.id);
+    box.append(item);
+  });
+}
+
+$("search").oninput = renderChats;
+
+async function loadChats() {
+  const d = await api("/conversations");
+  chats = d.conversations || [];
+  renderChats();
+}
+
+function addMessage(message) {
+  const row = document.createElement("div");
+  row.className = "msg" + (message.mine ? " mine" : "");
+  row.dataset.messageId = String(message.id);
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = message.text;
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent =
+    (message.mine ? "شما · " : "") + time(message.created_at);
+
+  row.append(bubble, meta);
+  $("messages").append(row);
+}
+
+async function loadMessages(initial = false) {
+  if (!active) return;
+
+  const d = await api(
+    `/conversations/${active}/messages?after=${initial ? 0 : lastId}`
+  );
+
+  if (initial) {
+    $("messages").replaceChildren();
+    lastId = 0;
+  }
+
+  (d.messages || []).forEach(message => {
+    addMessage(message);
+    lastId = Math.max(lastId, Number(message.id) || 0);
+  });
+
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+
+async function openChat(id) {
+  active = id;
+
+  const chat = chats.find(item => item.id === id);
+  $("headName").textContent = chat ? chat.title : "گفتگو";
+  $("headStatus").textContent = "گفتگوی نوا";
+  $("app").classList.add("open");
+  renderChats();
+
+  try {
+    await loadMessages(true);
+  } catch (e) {
+    $("messages").textContent = e.message;
+    if (e.status === 401) await init();
+  }
+
+  if (poll) clearInterval(poll);
+
+  poll = setInterval(async () => {
+    if (!me || !token) return;
+
+    try {
+      await loadMessages();
+      await loadChats();
+    } catch (e) {
+      if (e.status === 401) await init();
+    }
+  }, 4000);
+}
+
+$("back").onclick = () => $("app").classList.remove("open");
+
+$("sendForm").onsubmit = async event => {
+  event.preventDefault();
+
+  const text = $("message").value.trim();
+  if (!text) return;
+
+  if (!me) {
+    modal("auth");
+    return;
+  }
+
+  if (!active) {
+    alert("ابتدا گفتگویی انتخاب کن.");
+    return;
+  }
+
+  $("message").value = "";
+
+  try {
+    await api(`/conversations/${active}/messages`, {
+      method: "POST",
+      body: JSON.stringify({text})
+    });
+
+    await loadMessages();
+    await loadChats();
+  } catch (e) {
+    $("message").value = text;
+    alert(e.message);
+    if (e.status === 401) await init();
+  }
+};
+
+$("hideBanner").onclick = () => $("banner").classList.remove("show");
+
+async function loadAds() {
+  try {
+    const d = await api("/announcements");
+
+    if (d.announcements && d.announcements.length) {
+      $("bannerText").textContent = d.announcements[0].text;
+      $("banner").classList.add("show");
+    } else {
+      $("banner").classList.remove("show");
+    }
+  } catch {
+    // خطای موقت تبلیغات نباید مانع ورود شود.
+  }
+}
+
+async function init() {
+  if (initRunning || !token) return;
+
+  initRunning = true;
+  setStatus("در حال بررسی نشست...");
+
+  try {
+    const d = await api("/me");
+    me = d.user;
+
+    $("profile").textContent = me.name + " · " + me.phone;
+    $("ownerTools").classList.toggle("show", !!me.is_owner);
+    $("headName").textContent = "نوا پیام";
+    $("headStatus").textContent = "حساب شما متصل است";
+    setStatus("حساب متصل است");
+    modal("auth", false);
+
+    await loadChats();
+    await loadAds();
+
+    if (active) {
+      try {
+        await loadMessages(true);
+      } catch {}
+    }
+  } catch (e) {
+    if (e.status === 401) {
+      // فقط پاسخ 401 از سرور باعث حذف توکن می‌شود.
+      localStorage.removeItem("nova_token");
+      token = "";
+      me = null;
+      chats = [];
+      active = null;
+
+      renderChats();
+      setStatus("نیاز به ورود مجدد");
+      $("profile").textContent = "مهمان نوا";
+      $("ownerTools").classList.remove("show");
+      $("headStatus").textContent = "نشست معتبر نیست";
+
+      modal("auth", true);
+      note(
+        "authNotice",
+        "نشست معتبر نیست یا منقضی شده؛ لطفاً دوباره وارد شو."
+      );
+    } else {
+      // خطای شبکه/سرور توکن را پاک نمی‌کند.
+      setStatus("اتصال موقتاً برقرار نیست؛ تلاش مجدد انجام می‌شود");
+      $("headStatus").textContent = "در انتظار اتصال به سرور...";
+      modal("auth", false);
+    }
+  } finally {
+    initRunning = false;
+  }
+}
+
+$("ownerBtn").onclick = async () => {
+  modal("ownerModal");
+  note("ownerNotice", "");
+  await loadOwnerAds();
+};
+
+$("publish").onclick = async () => {
+  const text = $("adText").value.trim();
+
+  if (!text) {
+    note("ownerNotice", "متن تبلیغ را بنویس.");
+    return;
+  }
+
+  try {
+    await api("/owner/announcements", {
+      method: "POST",
+      body: JSON.stringify({text})
+    });
+
+    $("adText").value = "";
+    note("ownerNotice", "تبلیغ منتشر شد.");
+    await loadOwnerAds();
+    await loadAds();
+  } catch (e) {
+    note("ownerNotice", e.message);
+  }
+};
+
+async function loadOwnerAds() {
+  if (!me?.is_owner) return;
+
+  try {
+    const d = await api("/owner/announcements");
+    const box = $("adList");
+    box.replaceChildren();
+
+    (d.announcements || []).forEach(ad => {
+      const row = document.createElement("div");
+      row.className = "adrow";
+
+      const span = document.createElement("span");
+      span.textContent =
+        (ad.active ? "فعال · " : "غیرفعال · ") + ad.text;
+
+      const toggle = document.createElement("button");
+      toggle.textContent = ad.active ? "خاموش" : "فعال";
+
+      toggle.onclick = async () => {
+        try {
+          await api(`/owner/announcements/${ad.id}`, {method: "PATCH"});
+          await loadOwnerAds();
+          await loadAds();
+        } catch (e) {
+          note("ownerNotice", e.message);
+        }
+      };
+
+      const del = document.createElement("button");
+      del.textContent = "حذف";
+
+      del.onclick = async () => {
+        if (!confirm("حذف شود؟")) return;
+
+        try {
+          await api(`/owner/announcements/${ad.id}`, {method: "DELETE"});
+          await loadOwnerAds();
+          await loadAds();
+        } catch (e) {
+          note("ownerNotice", e.message);
+        }
+      };
+
+      row.append(span, toggle, del);
+      box.append(row);
+    });
+  } catch (e) {
+    note("ownerNotice", e.message);
+  }
+}
+
+(async () => {
+  renderChats();
+  await loadAds();
+
+  if (token) {
+    await init();
+
+    // اگر Render موقتاً در دسترس نباشد، دوباره تلاش می‌کنیم.
+    retryTimer = setInterval(async () => {
+      if (token && !me && !initRunning) {
+        await init();
+      }
+    }, 10000);
+  } else {
+    modal("auth", true);
+    setStatus("برای شروع وارد حساب شو");
+  }
 })();
 </script>
 </body>
