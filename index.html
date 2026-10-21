@@ -9,32 +9,36 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b1120;color:#f1f5f9;font:14px Tahoma,Arial;height:100dvh}
-button,input,textarea{font:inherit}
+button,input,textarea,select{font:inherit}
 button{cursor:pointer;border:0}
+button:disabled{opacity:.55;cursor:wait}
 .app{height:100dvh;display:flex}
-.side{width:330px;background:#111b2d;border-left:1px solid #ffffff12;display:flex;flex-direction:column}
-.top{padding:18px;display:flex;justify-content:space-between;align-items:center;font-size:21px;font-weight:bold}
+.side{width:330px;flex-shrink:0;background:#111b2d;border-left:1px solid #ffffff12;display:flex;flex-direction:column}
+.top{padding:16px;display:flex;justify-content:space-between;align-items:center;font-size:21px;font-weight:bold}
 .logo{display:flex;gap:10px;align-items:center}
 .logo i{font-style:normal;background:linear-gradient(135deg,#6366f1,#a855f7);padding:12px;border-radius:13px}
 .btn{background:#17243a;color:#fff;border-radius:11px;padding:10px 13px}
 .primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border-radius:11px;padding:12px}
+.danger{background:#7f1d1d;color:#fecaca;border-radius:10px;padding:10px}
 .search{margin:0 14px 12px;width:calc(100% - 28px);padding:13px;background:#17243a;color:white;border:0;border-radius:12px}
 .label{padding:6px 18px;color:#94a3b8;font-size:12px}
 .list{flex:1;overflow:auto}
 .chat{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;border-right:3px solid transparent}
 .chat.active{background:#6366f122;border-right-color:#6366f1}
-.avatar{background:linear-gradient(135deg,#2563eb,#38bdf8);border-radius:15px;padding:13px;font-size:20px}
+.avatar{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#2563eb,#8b5cf6);border-radius:15px;font-size:20px}
+.avatar img,.profilepic{width:100%;height:100%;object-fit:cover}
 .ci{flex:1;min-width:0}
 .ci b{display:block;margin-bottom:7px}
 .ci small{color:#94a3b8;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.profile{padding:14px;border-top:1px solid #ffffff12;display:flex;justify-content:space-between;align-items:center}
+.profile{padding:12px;border-top:1px solid #ffffff12;display:flex;gap:8px;justify-content:space-between;align-items:center}
+.profile span{overflow-wrap:anywhere}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 30%,#6366f111,transparent 55%),#0b1120}
 .head{padding:14px 20px;display:flex;align-items:center;gap:12px;background:#111b2dcc;border-bottom:1px solid #ffffff12}
 .head .ci{flex:1}
 .head small{color:#22c55e}
 .banner{display:none;padding:12px 16px;background:linear-gradient(100deg,#6d28d9,#4f46e5);gap:10px;line-height:1.8}
 .banner.show{display:flex}
-.banner span{flex:1}
+.banner span{flex:1;overflow-wrap:anywhere}
 .messages{flex:1;overflow:auto;padding:22px 7%;display:flex;flex-direction:column;gap:13px}
 .empty{margin:auto;text-align:center;color:#94a3b8;line-height:2}
 .msg{max-width:78%;align-self:flex-start}
@@ -46,18 +50,22 @@ button{cursor:pointer;border:0}
 .composer input{flex:1;min-width:0;padding:13px;background:#17243a;border:0;border-radius:12px;color:white;outline:0}
 .modalbg{display:none;position:fixed;inset:0;background:#000b;z-index:5;align-items:center;justify-content:center;padding:18px}
 .modalbg.show{display:flex}
-.modal{width:min(440px,100%);max-height:90dvh;overflow:auto;background:#111b2d;border:1px solid #ffffff15;border-radius:19px;padding:22px}
+.modal{width:min(460px,100%);max-height:90dvh;overflow:auto;background:#111b2d;border:1px solid #ffffff15;border-radius:19px;padding:22px}
 .modal h2{margin-top:0}
 .modal p{color:#94a3b8;font-size:12px;line-height:1.9}
 .field{width:100%;margin:7px 0;padding:13px;background:#17243a;color:white;border:1px solid #ffffff12;border-radius:11px;outline:0}
 .wide{width:100%;margin-top:8px}
-.notice{color:#fca5a5;font-size:12px;line-height:1.8;white-space:pre-wrap}
+.notice{color:#fca5a5;font-size:12px;line-height:1.8;white-space:pre-wrap;margin-top:8px}
+.success{color:#86efac}
 .tools{display:none;padding:12px;border-top:1px solid #ffffff12}
 .tools.show{display:block}
-.adrow{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #ffffff12}
-.adrow span{flex:1;overflow-wrap:anywhere}
-.adrow button{background:#17243a;color:white;border-radius:8px;padding:7px}
+.adrow,.channelrow{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff12}
+.adrow span,.channelrow span{flex:1;overflow-wrap:anywhere}
+.adrow button,.channelrow button{background:#17243a;color:white;border-radius:8px;padding:7px}
 .statusline{font-size:11px;color:#94a3b8;padding:0 14px 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hint{color:#94a3b8;font-size:11px;line-height:1.8}
+hr{border:0;border-top:1px solid #ffffff12;margin:16px 0}
 @media(max-width:700px){
 .side{width:100%;border:0}
 .main{display:none}
@@ -75,86 +83,135 @@ button{cursor:pointer;border:0}
 <body>
 <div class="app" id="app">
 <aside class="side">
-<div class="top">
-<div class="logo"><i>✉</i> نوا پیام</div>
-<button class="btn" id="newBtn">＋</button>
-</div>
-<input class="search" id="search" placeholder="جستجو در گفتگوها...">
-<div class="label">گفتگوهای اخیر</div>
-<div class="list" id="list"></div>
-<div class="tools" id="ownerTools">
-<button class="primary wide" id="ownerBtn">✦ پنل مالک نوا</button>
-</div>
-<div class="statusline" id="connectionStatus">در حال آماده‌سازی نوا...</div>
-<div class="profile">
-<span id="profile">مهمان نوا</span>
-<button class="btn" id="accountBtn">حساب ⚙</button>
-</div>
+  <div class="top">
+    <div class="logo"><i>✉</i> نوا پیام</div>
+    <button class="btn" id="newBtn" title="گفتگوی جدید">＋</button>
+  </div>
+  <input class="search" id="search" placeholder="جستجو در گفتگوها...">
+  <div class="label">گفتگوها و کانال‌ها</div>
+  <div class="list" id="list"></div>
+  <div class="tools" id="ownerTools">
+    <button class="primary wide" id="ownerBtn">✦ پنل مالک نوا</button>
+  </div>
+  <div class="statusline" id="connectionStatus">در حال آماده‌سازی نوا...</div>
+  <div class="profile">
+    <span id="profile">مهمان نوا</span>
+    <button class="btn" id="accountBtn">حساب ⚙</button>
+  </div>
 </aside>
 
 <main class="main">
-<header class="head">
-<button class="btn back" id="back" style="display:none">→</button>
-<div class="avatar">✉</div>
-<div class="ci">
-<b id="headName">به نوا پیام خوش آمدی</b>
-<small id="headStatus">برای شروع وارد حساب شو</small>
-</div>
-<button class="btn" id="newBtn2">＋</button>
-</header>
-<div class="banner" id="banner">
-<span id="bannerText"></span>
-<button class="btn" id="hideBanner">×</button>
-</div>
-<section class="messages" id="messages">
-<div class="empty">💬<h3>پیام‌رسان نوا</h3><p>برای شروع، وارد حساب شو یا گفتگوی جدید بساز.</p></div>
-</section>
-<form class="composer" id="sendForm">
-<input id="message" maxlength="5000" placeholder="پیامت رو بنویس..." autocomplete="off">
-<button class="primary">ارسال ➤</button>
-</form>
+  <header class="head">
+    <button class="btn back" id="back" style="display:none">→</button>
+    <div class="avatar" id="headAvatar">✉</div>
+    <div class="ci">
+      <b id="headName">به نوا پیام خوش آمدی</b>
+      <small id="headStatus">برای شروع وارد حساب شو</small>
+    </div>
+    <button class="btn" id="chatInfoBtn" hidden>ⓘ</button>
+    <button class="btn" id="newBtn2">＋</button>
+  </header>
+  <div class="banner" id="banner">
+    <span id="bannerText"></span>
+    <button class="btn" id="hideBanner">×</button>
+  </div>
+  <section class="messages" id="messages">
+    <div class="empty">💬<h3>پیام‌رسان نوا</h3><p>برای شروع وارد حساب شو یا گفتگوی جدید بساز.</p></div>
+  </section>
+  <form class="composer" id="sendForm">
+    <input id="message" maxlength="5000" placeholder="پیامت رو بنویس..." autocomplete="off">
+    <button class="primary">ارسال ➤</button>
+  </form>
 </main>
 </div>
 
 <div class="modalbg" id="auth">
 <div class="modal">
-<h2>ورود به نوا پیام</h2>
-<p>شماره موبایل را وارد کن تا کد تأیید پیامکی ارسال شود.</p>
-<input class="field" id="phone" inputmode="tel" autocomplete="tel" placeholder="مثلاً 09924045383">
-<div id="codeBox" hidden>
-<input class="field" id="code" inputmode="numeric" autocomplete="one-time-code" placeholder="کد پیامک‌شده">
-<input class="field" id="displayName" maxlength="80" placeholder="نام نمایشی (اختیاری)">
-</div>
-<button class="primary wide" id="authSubmit">ارسال کد تأیید</button>
-<button class="btn wide" id="authClose">فعلاً نه</button>
-<div class="notice" id="authNotice"></div>
+  <h2>ورود به نوا پیام</h2>
+  <p>شماره موبایل را وارد کن تا کد تأیید ارسال شود.</p>
+  <input class="field" id="phone" inputmode="tel" autocomplete="tel" placeholder="شماره موبایل">
+  <div id="codeBox" hidden>
+    <input class="field" id="code" inputmode="numeric" autocomplete="one-time-code" placeholder="کد تأیید">
+    <input class="field" id="displayName" maxlength="80" placeholder="نام نمایشی (اختیاری)">
+  </div>
+  <button class="primary wide" id="authSubmit">ارسال کد تأیید</button>
+  <button class="btn wide" id="authClose">فعلاً نه</button>
+  <div class="notice" id="authNotice"></div>
 </div>
 </div>
 
 <div class="modalbg" id="newModal">
 <div class="modal">
-<h2>گفتگوی جدید</h2>
-<p>شماره فردی را وارد کن که قبلاً در نوا ثبت‌نام کرده است.</p>
-<input class="field" id="targetPhone" inputmode="tel" placeholder="شماره موبایل">
-<button class="primary wide" id="findUser">جستجو و شروع گفتگو</button>
-<button class="btn wide" data-close="newModal">بستن</button>
-<div class="notice" id="newNotice"></div>
+  <h2>شروع گفتگو</h2>
+  <p>شماره موبایل فردی را وارد کن که در نوا ثبت‌نام کرده است.</p>
+  <input class="field" id="targetPhone" inputmode="tel" placeholder="شماره موبایل">
+  <button class="primary wide" id="findUser">جستجو و شروع گفتگو</button>
+  <hr>
+  <h3>ساخت گروه یا کانال</h3>
+  <input class="field" id="channelTitle" maxlength="100" placeholder="نام گروه یا کانال">
+  <textarea class="field" id="channelDescription" maxlength="500" rows="2" placeholder="توضیحات (اختیاری)"></textarea>
+  <select class="field" id="channelKind">
+    <option value="group">گروه</option>
+    <option value="channel">کانال</option>
+  </select>
+  <select class="field" id="channelPrivacy">
+    <option value="private">خصوصی</option>
+    <option value="public">عمومی</option>
+  </select>
+  <input class="field" id="channelUsername" maxlength="32" placeholder="نام کاربری کانال عمومی (بدون @)">
+  <button class="primary wide" id="createChannel">ساخت گروه / کانال</button>
+  <div class="hint">برای کانال عمومی یک نام کاربری انگلیسی یکتا وارد کن. در گروه یا کانال خصوصی می‌توان لینک دعوت ساخت.</div>
+  <button class="btn wide" data-close="newModal">بستن</button>
+  <div class="notice" id="newNotice"></div>
+</div>
+</div>
+
+<div class="modalbg" id="profileModal">
+<div class="modal">
+  <h2>پروفایل من</h2>
+  <p>اطلاعات حساب و شناسه اختصاصی</p>
+  <div class="avatar" style="width:80px;height:80px;margin:10px auto" id="profilePreview">👤</div>
+  <label for="avatarFile" class="hint">انتخاب عکس پروفایل</label>
+  <input class="field" id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
+  <input class="field" id="myName" maxlength="80" placeholder="نام نمایشی">
+  <input class="field" id="myUsername" maxlength="32" placeholder="نام کاربری بدون @">
+  <textarea class="field" id="myBio" maxlength="300" rows="3" placeholder="درباره من"></textarea>
+  <div class="hint" id="myId">شناسه اختصاصی: —</div>
+  <button class="primary wide" id="saveProfile">ذخیره تغییرات</button>
+  <button class="btn wide" data-close="profileModal">بستن</button>
+  <div class="notice" id="profileNotice"></div>
+</div>
+</div>
+
+<div class="modalbg" id="channelModal">
+<div class="modal">
+  <h2 id="channelModalTitle">مدیریت گروه / کانال</h2>
+  <div id="channelDetails" class="hint"></div>
+  <hr>
+  <button class="primary wide" id="makeLink">ساخت / دریافت لینک دعوت خصوصی</button>
+  <button class="btn wide" id="togglePrivacy">تغییر عمومی / خصوصی</button>
+  <button class="btn wide" id="copyChannelLink">کپی لینک کانال</button>
+  <button class="danger wide" id="revokeInvite">لغو لینک دعوت خصوصی</button>
+  <button class="btn wide" data-close="channelModal">بستن</button>
+  <div class="notice" id="channelNotice"></div>
 </div>
 </div>
 
 <div class="modalbg" id="ownerModal">
 <div class="modal">
-<h2>پنل مالک نوا</h2>
-<p>متن تبلیغ یا اطلاعیه در بالای پیام‌رسان نمایش داده می‌شود.</p>
-<textarea class="field" id="adText" maxlength="500" rows="3" placeholder="متن تبلیغ..."></textarea>
-<button class="primary wide" id="publish">انتشار تبلیغ</button>
-<div id="adList"></div>
-<button class="btn wide" data-close="ownerModal">بستن</button>
-<div class="notice" id="ownerNotice"></div>
+  <h2>پنل مالک نوا</h2>
+  <p>متن اطلاعیه در بالای پیام‌رسان نمایش داده می‌شود.</p>
+  <textarea class="field" id="adText" maxlength="500" rows="3" placeholder="متن اطلاعیه..."></textarea>
+  <button class="primary wide" id="publish">انتشار اطلاعیه</button>
+  <div id="adList"></div>
+  <button class="btn wide" data-close="ownerModal">بستن</button>
+  <div class="notice" id="ownerNotice"></div>
 </div>
 </div>
 
 <script>
+"use strict";
+
 const API = "https://nova-messenger-api-2.onrender.com";
 const $ = id => document.getElementById(id);
 
@@ -162,503 +219,583 @@ let token = localStorage.getItem("nova_token") || "";
 let me = null;
 let chats = [];
 let active = null;
+let activeChat = null;
 let lastId = 0;
 let authStep = 1;
 let poll = null;
 let initRunning = false;
+let selectedAvatar = "";
+let inviteLink = "";
 let retryTimer = null;
 
-function headers() {
+function headers(){
   return {
-    "Content-Type": "application/json",
-    ...(token ? {"Authorization": "Bearer " + token} : {})
+    "Content-Type":"application/json",
+    ...(token ? {"Authorization":"Bearer "+token} : {})
   };
 }
 
-async function api(path, opts = {}) {
+async function api(path,opts={}){
   let r;
-
-  try {
-    r = await fetch(API + path, {
+  try{
+    r=await fetch(API+path,{
       ...opts,
-      headers: {...headers(), ...(opts.headers || {})}
+      headers:{...headers(),...(opts.headers||{})}
     });
-  } catch (err) {
-    const e = new Error("ارتباط با سرور برقرار نشد؛ ممکن است سرور در حال بیدارشدن باشد.");
-    e.networkError = true;
+  }catch(e){
+    const err=new Error("ارتباط با سرور برقرار نشد. اتصال اینترنت را بررسی کن.");
+    err.networkError=true;
+    throw err;
+  }
+  let d={};
+  try{d=await r.json()}catch{}
+  if(!r.ok){
+    const e=new Error(d.error||d.message||`درخواست ناموفق بود (${r.status})`);
+    e.status=r.status;
+    e.payload=d;
     throw e;
   }
-
-  let d = {};
-  try { d = await r.json(); } catch {}
-
-  if (!r.ok) {
-    const e = new Error(d.error || "درخواست به سرور ناموفق بود.");
-    e.status = r.status;
-    e.payload = d;
-    throw e;
-  }
-
   return d;
 }
 
-function note(id, text) {
-  $(id).textContent = text || "";
+function note(id,text,success=false){
+  const el=$(id);
+  el.textContent=text||"";
+  el.classList.toggle("success",!!success);
 }
 
-function modal(id, show = true) {
-  $(id).classList.toggle("show", show);
+function modal(id,show=true){
+  $(id).classList.toggle("show",show);
 }
 
-function setStatus(text) {
-  $("connectionStatus").textContent = text;
-}
-
-document.querySelectorAll("[data-close]").forEach(button => {
-  button.onclick = () => modal(button.dataset.close, false);
+document.querySelectorAll("[data-close]").forEach(b=>{
+  b.onclick=()=>modal(b.dataset.close,false);
 });
+$("authClose").onclick=()=>modal("auth",false);
+$("hideBanner").onclick=()=>$("banner").classList.remove("show");
 
-$("authClose").onclick = () => modal("auth", false);
+function normalizeUsername(v){
+  return String(v||"").trim().replace(/^@/,"");
+}
 
-$("authSubmit").onclick = async () => {
-  const phone = $("phone").value.trim();
-  const code = $("code").value.trim();
+function validUsername(v){
+  return /^[a-zA-Z0-9_]{3,32}$/.test(v);
+}
 
-  $("authSubmit").disabled = true;
-  note("authNotice", "در حال ارتباط با سرور...");
+function avatarNode(url,fallback="👤"){
+  const box=document.createElement("div");
+  box.className="avatar";
+  if(url){
+    const img=document.createElement("img");
+    img.src=url;
+    img.alt="عکس پروفایل";
+    img.onerror=()=>{box.textContent=fallback};
+    box.append(img);
+  }else box.textContent=fallback;
+  return box;
+}
 
-  try {
-    if (authStep === 1) {
-      await api("/send-code", {
-        method: "POST",
-        body: JSON.stringify({phone})
+function time(value){
+  try{
+    return new Intl.DateTimeFormat("fa-IR",{
+      hour:"2-digit",minute:"2-digit"
+    }).format(new Date(value));
+  }catch{return ""}
+}
+
+function setStatus(s){$("connectionStatus").textContent=s}
+
+$("authSubmit").onclick=async()=>{
+  const phone=$("phone").value.trim();
+  const code=$("code").value.trim();
+  $("authSubmit").disabled=true;
+  note("authNotice","در حال ارتباط با سرور...");
+  try{
+    if(authStep===1){
+      await api("/send-code",{
+        method:"POST",body:JSON.stringify({phone})
       });
-
-      authStep = 2;
-      $("codeBox").hidden = false;
-      $("authSubmit").textContent = "تأیید کد و ورود";
-      note("authNotice", "درخواست ثبت شد؛ کد پیامک را وارد کن.");
+      authStep=2;
+      $("codeBox").hidden=false;
+      $("authSubmit").textContent="تأیید کد و ورود";
+      note("authNotice","کد ارسال شد؛ کد پیامک‌شده را وارد کن.",true);
       $("code").focus();
-    } else {
-      const d = await api("/verify-code", {
-        method: "POST",
-        body: JSON.stringify({phone, code})
+    }else{
+      const d=await api("/verify-code",{
+        method:"POST",body:JSON.stringify({phone,code})
       });
-
-      if (!d.token) throw new Error("سرور توکن ورود برنگرداند.");
-
-      token = d.token;
-      localStorage.setItem("nova_token", token);
-      me = d.user;
-
-      const name = $("displayName").value.trim();
-
-      if (name) {
-        await api("/me", {
-          method: "PATCH",
-          body: JSON.stringify({name})
-        });
-        me.name = name;
+      if(!d.token)throw new Error("سرور توکن ورود برنگرداند.");
+      token=d.token;
+      localStorage.setItem("nova_token",token);
+      me=d.user||null;
+      const name=$("displayName").value.trim();
+      if(name){
+        await api("/me",{method:"PATCH",body:JSON.stringify({name})});
       }
-
-      modal("auth", false);
-      note("authNotice", "");
+      modal("auth",false);
       await init();
     }
-  } catch (e) {
-    note("authNotice", e.message);
-  } finally {
-    $("authSubmit").disabled = false;
-  }
+  }catch(e){note("authNotice",e.message)}
+  finally{$("authSubmit").disabled=false}
 };
 
-$("accountBtn").onclick = () => {
-  if (!me) {
-    modal("auth");
-    return;
-  }
+function logout(){
+  if(!confirm("از حساب خارج شوی؟"))return;
+  localStorage.removeItem("nova_token");
+  token="";
+  me=null;
+  chats=[];
+  active=null;
+  if(poll)clearInterval(poll);
+  location.reload();
+}
 
-  if (confirm("از حساب خارج شوی؟")) {
-    // توکن فقط هنگام خروج آگاهانه کاربر حذف می‌شود.
-    localStorage.removeItem("nova_token");
-    token = "";
-    me = null;
-    if (poll) clearInterval(poll);
-    location.reload();
-  }
+$("accountBtn").onclick=()=>{
+  if(!me){modal("auth");return}
+  openProfile();
 };
 
-$("newBtn").onclick = $("newBtn2").onclick = () => {
-  if (!me) {
-    modal("auth");
-    return;
+function openProfile(){
+  note("profileNotice","");
+  $("myName").value=me?.name||me?.display_name||"";
+  $("myUsername").value=me?.username||"";
+  $("myBio").value=me?.bio||"";
+  $("myId").textContent="شناسه اختصاصی: "+(me?.id??"نامشخص");
+  selectedAvatar=me?.avatar_url||"";
+  $("profilePreview").replaceChildren();
+  if(selectedAvatar){
+    const img=document.createElement("img");
+    img.className="profilepic";
+    img.src=selectedAvatar;
+    $("profilePreview").append(img);
+  }else $("profilePreview").textContent="👤";
+  modal("profileModal");
+}
+
+$("avatarFile").onchange=()=>{
+  const file=$("avatarFile").files[0];
+  if(!file)return;
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+    note("profileNotice","فقط تصویر JPG، PNG یا WebP مجاز است.");return;
   }
-  note("newNotice", "");
+  if(file.size>300*1024){
+    note("profileNotice","حجم عکس باید کمتر از ۳۰۰ کیلوبایت باشد.");return;
+  }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    selectedAvatar=reader.result;
+    $("profilePreview").replaceChildren();
+    const img=document.createElement("img");
+    img.className="profilepic";
+    img.src=selectedAvatar;
+    $("profilePreview").append(img);
+  };
+  reader.readAsDataURL(file);
+};
+
+$("saveProfile").onclick=async()=>{
+  const name=$("myName").value.trim();
+  const username=normalizeUsername($("myUsername").value);
+  const bio=$("myBio").value.trim();
+  if(username&&!validUsername(username)){
+    note("profileNotice","نام کاربری باید ۳ تا ۳۲ حرف انگلیسی، عدد یا زیرخط باشد.");return;
+  }
+  $("saveProfile").disabled=true;
+  try{
+    const payload={name,username,bio};
+    if(selectedAvatar)payload.avatar_url=selectedAvatar;
+    const d=await api("/me",{
+      method:"PATCH",body:JSON.stringify(payload)
+    });
+    me=d.user||{...me,...payload};
+    if(d.username)me.username=d.username;
+    note("profileNotice","پروفایل ذخیره شد.",true);
+    updateProfileUI();
+    await loadChats();
+  }catch(e){
+    note("profileNotice",
+      e.status===404||e.status===405
+      ?"سرور فعلی این قابلیت را پشتیبانی نمی‌کند؛ مسیر PATCH /me باید username و avatar_url را ذخیره کند."
+      :e.message);
+  }finally{$("saveProfile").disabled=false}
+};
+
+function updateProfileUI(){
+  $("profile").textContent=(me?.name||me?.display_name||"کاربر")+" · "+(me?.username?"@"+me.username:(me?.phone||""));
+  $("ownerTools").classList.toggle("show",!!me?.is_owner);
+  const av=$("headAvatar");
+  av.replaceChildren();
+  if(me?.avatar_url){
+    const img=document.createElement("img");
+    img.src=me.avatar_url;img.alt="پروفایل";
+    av.append(img);
+  }else av.textContent="✉";
+}
+
+$("newBtn").onclick=$("newBtn2").onclick=()=>{
+  if(!me){modal("auth");return}
+  note("newNotice","");
   modal("newModal");
 };
 
-$("findUser").onclick = async () => {
-  note("newNotice", "در حال جستجو...");
-
-  try {
-    const d = await api(
-      "/users/search?phone=" + encodeURIComponent($("targetPhone").value.trim())
-    );
-
-    if (!d.users.length) {
-      note("newNotice", "کاربر پیدا نشد؛ ابتدا باید ثبت‌نام کند.");
-      return;
-    }
-
-    const c = await api("/conversations", {
-      method: "POST",
-      body: JSON.stringify({user_id: d.users[0].id})
+$("findUser").onclick=async()=>{
+  const phone=$("targetPhone").value.trim();
+  if(!phone){note("newNotice","شماره موبایل را وارد کن.");return}
+  note("newNotice","در حال جستجو...");
+  try{
+    const d=await api("/users/search?phone="+encodeURIComponent(phone));
+    if(!d.users?.length){note("newNotice","کاربر پیدا نشد.");return}
+    const c=await api("/conversations",{
+      method:"POST",body:JSON.stringify({user_id:d.users[0].id})
     });
-
-    modal("newModal", false);
+    modal("newModal",false);
     await loadChats();
-    await openChat(c.conversation_id);
-  } catch (e) {
-    note("newNotice", e.message);
-  }
+    await openChat(c.conversation_id||c.id||c.conversation?.id);
+  }catch(e){note("newNotice",e.message)}
 };
 
-function time(value) {
-  try {
-    return new Intl.DateTimeFormat("fa-IR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    }).format(new Date(value));
-  } catch {
-    return "";
+$("createChannel").onclick=async()=>{
+  const title=$("channelTitle").value.trim();
+  const kind=$("channelKind").value;
+  const privacy=$("channelPrivacy").value;
+  const username=normalizeUsername($("channelUsername").value);
+  const description=$("channelDescription").value.trim();
+  if(!title){note("newNotice","نام گروه یا کانال را وارد کن.");return}
+  if(privacy==="public"&&!validUsername(username)){
+    note("newNotice","برای کانال عمومی نام کاربری معتبر وارد کن.");return
   }
-}
+  const button=$("createChannel");
+  button.disabled=true;
+  try{
+    const d=await api("/channels",{
+      method:"POST",
+      body:JSON.stringify({
+        title,name:title,kind,description,
+        is_public:privacy==="public",
+        username:privacy==="public"?username:null
+      })
+    });
+    modal("newModal",false);
+    await loadChats();
+    const id=d.conversation_id||d.id||d.conversation?.id||d.channel?.id;
+    if(id)await openChat(id);
+    if(d.invite_code){
+      const link=location.origin+location.pathname+"?invite="+encodeURIComponent(d.invite_code);
+      await copyText(link);
+      alert("گروه/کانال ساخته شد. لینک دعوت کپی شد:\n"+link);
+    }else if(privacy==="public"&&username){
+      const link=location.origin+location.pathname+"?channel="+encodeURIComponent(username);
+      alert("گروه/کانال ساخته شد:\n"+link);
+    }
+  }catch(e){
+    note("newNotice",
+      e.status===404||e.status===405
+      ?"مسیر ساخت کانال در سرور موجود نیست. ابتدا POST /channels را در API فعال کن."
+      :e.message);
+  }finally{button.disabled=false}
+};
 
-function renderChats() {
-  const box = $("list");
+function renderChats(){
+  const box=$("list");
   box.replaceChildren();
-
-  const query = $("search").value.trim().toLocaleLowerCase();
-  const filtered = chats.filter(c =>
-    (String(c.title || "") + " " + String(c.last_message || ""))
+  const query=$("search").value.trim().toLocaleLowerCase();
+  const filtered=chats.filter(c=>
+    (String(c.title||"")+" "+String(c.last_message||""))
       .toLocaleLowerCase().includes(query)
   );
-
-  if (!filtered.length) {
-    const empty = document.createElement("div");
-    empty.style.cssText = "padding:20px;color:#94a3b8;font-size:12px";
-    empty.textContent = me
-      ? "هنوز گفتگویی نداری. روی + بزن."
-      : "برای دیدن گفتگوها وارد حساب شو.";
-    box.append(empty);
-    return;
+  if(!filtered.length){
+    const empty=document.createElement("div");
+    empty.style.cssText="padding:20px;color:#94a3b8;font-size:12px";
+    empty.textContent=me?"هنوز گفتگویی نداری. روی + بزن.":"برای دیدن گفتگوها وارد حساب شو.";
+    box.append(empty);return;
   }
-
-  filtered.forEach(c => {
-    const item = document.createElement("div");
-    item.className = "chat" + (c.id === active ? " active" : "");
-
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = "👤";
-
-    const info = document.createElement("div");
-    info.className = "ci";
-
-    const title = document.createElement("b");
-    title.textContent = c.title || "گفتگو";
-
-    const small = document.createElement("small");
-    small.textContent = c.last_message || "هنوز پیامی نیست";
-
-    info.append(title, small);
-    item.append(avatar, info);
-    item.onclick = () => openChat(c.id);
+  filtered.forEach(c=>{
+    const item=document.createElement("div");
+    item.className="chat"+(String(c.id)===String(active)?" active":"");
+    const av=avatarNode(c.avatar_url,c.kind==="channel"?"📢":"👤");
+    const info=document.createElement("div");info.className="ci";
+    const title=document.createElement("b");
+    title.textContent=c.title||c.name||"گفتگو";
+    const small=document.createElement("small");
+    small.textContent=c.last_message||(
+      c.kind==="channel"?"کانال":c.kind==="group"?"گروه":"هنوز پیامی نیست"
+    );
+    info.append(title,small);
+    item.append(av,info);
+    item.onclick=()=>openChat(c.id);
+    item.oncontextmenu=e=>{
+      if(c.kind==="group"||c.kind==="channel"){
+        e.preventDefault();openChannelManager(c);
+      }
+    };
     box.append(item);
   });
 }
+$("search").oninput=renderChats;
 
-$("search").oninput = renderChats;
-
-async function loadChats() {
-  const d = await api("/conversations");
-  chats = d.conversations || [];
+async function loadChats(){
+  const d=await api("/conversations");
+  chats=d.conversations||[];
   renderChats();
 }
 
-function addMessage(message) {
-  const row = document.createElement("div");
-  row.className = "msg" + (message.mine ? " mine" : "");
-  row.dataset.messageId = String(message.id);
-
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.textContent = message.text;
-
-  const meta = document.createElement("div");
-  meta.className = "meta";
-  meta.textContent =
-    (message.mine ? "شما · " : "") + time(message.created_at);
-
-  row.append(bubble, meta);
+function addMessage(m){
+  const row=document.createElement("div");
+  row.className="msg"+(m.mine?" mine":"");
+  row.dataset.messageId=String(m.id);
+  const bubble=document.createElement("div");
+  bubble.className="bubble";
+  bubble.textContent=m.text??m.content??"";
+  const meta=document.createElement("div");
+  meta.className="meta";
+  meta.textContent=(m.mine?"شما · ":"") +time(m.created_at);
+  row.append(bubble,meta);
   $("messages").append(row);
 }
 
-async function loadMessages(initial = false) {
-  if (!active) return;
-
-  const d = await api(
-    `/conversations/${active}/messages?after=${initial ? 0 : lastId}`
-  );
-
-  if (initial) {
-    $("messages").replaceChildren();
-    lastId = 0;
-  }
-
-  (d.messages || []).forEach(message => {
-    addMessage(message);
-    lastId = Math.max(lastId, Number(message.id) || 0);
+async function loadMessages(initial=false){
+  if(!active)return;
+  const d=await api(`/conversations/${encodeURIComponent(active)}/messages?after=${initial?0:lastId}`);
+  if(initial){$("messages").replaceChildren();lastId=0}
+  (d.messages||[]).forEach(m=>{
+    addMessage(m);
+    lastId=Math.max(lastId,Number(m.id)||0);
   });
-
-  $("messages").scrollTop = $("messages").scrollHeight;
+  if(initial||d.messages?.length)$("messages").scrollTop=$("messages").scrollHeight;
 }
 
-async function openChat(id) {
-  active = id;
-
-  const chat = chats.find(item => item.id === id);
-  $("headName").textContent = chat ? chat.title : "گفتگو";
-  $("headStatus").textContent = "گفتگوی نوا";
+async function openChat(id){
+  if(id===undefined||id===null){alert("شناسه گفتگو از سرور دریافت نشد.");return}
+  active=id;
+  activeChat=chats.find(c=>String(c.id)===String(id))||null;
+  $("headName").textContent=activeChat?.title||activeChat?.name||"گفتگو";
+  $("headStatus").textContent=activeChat?.kind==="channel"?"کانال":activeChat?.kind==="group"?"گروه":"گفتگوی نوا";
+  $("chatInfoBtn").hidden=!(activeChat&&(activeChat.kind==="group"||activeChat.kind==="channel"));
   $("app").classList.add("open");
   renderChats();
-
-  try {
-    await loadMessages(true);
-  } catch (e) {
-    $("messages").textContent = e.message;
-    if (e.status === 401) await init();
-  }
-
-  if (poll) clearInterval(poll);
-
-  poll = setInterval(async () => {
-    if (!me || !token) return;
-
-    try {
-      await loadMessages();
-      await loadChats();
-    } catch (e) {
-      if (e.status === 401) await init();
-    }
-  }, 4000);
+  try{await loadMessages(true)}
+  catch(e){$("messages").textContent=e.message}
+  if(poll)clearInterval(poll);
+  poll=setInterval(async()=>{
+    if(!me||!token)return;
+    try{await loadMessages();await loadChats()}
+    catch(e){if(e.status===401)await init()}
+  },5000);
 }
+$("back").onclick=()=>$("app").classList.remove("open");
+$("chatInfoBtn").onclick=()=>{if(activeChat)openChannelManager(activeChat)};
 
-$("back").onclick = () => $("app").classList.remove("open");
-
-$("sendForm").onsubmit = async event => {
-  event.preventDefault();
-
-  const text = $("message").value.trim();
-  if (!text) return;
-
-  if (!me) {
-    modal("auth");
-    return;
-  }
-
-  if (!active) {
-    alert("ابتدا گفتگویی انتخاب کن.");
-    return;
-  }
-
-  $("message").value = "";
-
-  try {
-    await api(`/conversations/${active}/messages`, {
-      method: "POST",
-      body: JSON.stringify({text})
+$("sendForm").onsubmit=async e=>{
+  e.preventDefault();
+  const text=$("message").value.trim();
+  if(!text)return;
+  if(!me){modal("auth");return}
+  if(!active){alert("ابتدا یک گفتگو انتخاب کن.");return}
+  $("message").value="";
+  try{
+    await api(`/conversations/${encodeURIComponent(active)}/messages`,{
+      method:"POST",body:JSON.stringify({text})
     });
-
-    await loadMessages();
-    await loadChats();
-  } catch (e) {
-    $("message").value = text;
-    alert(e.message);
-    if (e.status === 401) await init();
-  }
+    await loadMessages();await loadChats();
+  }catch(err){$("message").value=text;alert(err.message)}
 };
 
-$("hideBanner").onclick = () => $("banner").classList.remove("show");
-
-async function loadAds() {
-  try {
-    const d = await api("/announcements");
-
-    if (d.announcements && d.announcements.length) {
-      $("bannerText").textContent = d.announcements[0].text;
+async function loadAds(){
+  try{
+    const d=await api("/announcements");
+    const items=d.announcements||[];
+    if(items.length){
+      $("bannerText").textContent=items[0].text;
       $("banner").classList.add("show");
-    } else {
-      $("banner").classList.remove("show");
-    }
-  } catch {
-    // خطای موقت تبلیغات نباید مانع ورود شود.
+    }else $("banner").classList.remove("show");
+  }catch{}
+}
+
+async function loadOwnerAds(){
+  if(!me?.is_owner)return;
+  try{
+    const d=await api("/owner/announcements");
+    const box=$("adList");box.replaceChildren();
+    (d.announcements||[]).forEach(ad=>{
+      const row=document.createElement("div");row.className="adrow";
+      const span=document.createElement("span");
+      span.textContent=(ad.active?"فعال · ":"غیرفعال · ")+ad.text;
+      const toggle=document.createElement("button");
+      toggle.textContent=ad.active?"خاموش":"فعال";
+      toggle.onclick=async()=>{
+        try{await api(`/owner/announcements/${ad.id}`,{method:"PATCH"});await loadOwnerAds();await loadAds()}
+        catch(e){note("ownerNotice",e.message)}
+      };
+      const del=document.createElement("button");del.textContent="حذف";
+      del.onclick=async()=>{
+        if(!confirm("این اطلاعیه حذف شود؟"))return;
+        try{await api(`/owner/announcements/${ad.id}`,{method:"DELETE"});await loadOwnerAds();await loadAds()}
+        catch(e){note("ownerNotice",e.message)}
+      };
+      row.append(span,toggle,del);box.append(row);
+    });
+  }catch(e){note("ownerNotice",e.message)}
+}
+
+$("ownerBtn").onclick=async()=>{
+  modal("ownerModal");note("ownerNotice","");await loadOwnerAds();
+};
+$("publish").onclick=async()=>{
+  const text=$("adText").value.trim();
+  if(!text){note("ownerNotice","متن اطلاعیه را بنویس.");return}
+  try{
+    await api("/owner/announcements",{method:"POST",body:JSON.stringify({text})});
+    $("adText").value="";
+    note("ownerNotice","اطلاعیه منتشر شد.",true);
+    await loadOwnerAds();await loadAds();
+  }catch(e){note("ownerNotice",e.message)}
+};
+
+function openChannelManager(c){
+  activeChat=c;
+  $("channelModalTitle").textContent="مدیریت "+(c.kind==="channel"?"کانال":"گروه");
+  $("channelDetails").textContent=
+    "نام: "+(c.title||c.name||"—")+
+    "\nشناسه: "+c.id+
+    "\nوضعیت: "+(c.is_public?"عمومی":"خصوصی")+
+    (c.username?"\nنام کاربری: @"+c.username:"");
+  note("channelNotice","");
+  inviteLink="";
+  modal("channelModal");
+}
+
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch{
+    const ta=document.createElement("textarea");
+    ta.value=text;document.body.append(ta);ta.select();
+    const ok=document.execCommand("copy");ta.remove();
+    return ok;
   }
 }
 
-async function init() {
-  if (initRunning || !token) return;
+$("makeLink").onclick=async()=>{
+  if(!activeChat)return;
+  try{
+    const d=await api(`/channels/${encodeURIComponent(activeChat.id)}/invite`,{method:"POST"});
+    const code=d.invite_code||d.code||d.invite?.code;
+    if(!code)throw new Error("سرور لینک دعوت برنگرداند.");
+    inviteLink=location.origin+location.pathname+"?invite="+encodeURIComponent(code);
+    await copyText(inviteLink);
+    note("channelNotice","لینک دعوت ساخته و کپی شد:\n"+inviteLink,true);
+  }catch(e){note("channelNotice",e.message)}
+};
 
-  initRunning = true;
+$("togglePrivacy").onclick=async()=>{
+  if(!activeChat)return;
+  try{
+    const d=await api(`/channels/${encodeURIComponent(activeChat.id)}/privacy`,{
+      method:"PATCH",
+      body:JSON.stringify({is_public:!activeChat.is_public})
+    });
+    activeChat.is_public=!!(d.is_public??!activeChat.is_public);
+    note("channelNotice","تنظیمات حریم خصوصی به‌روزرسانی شد.",true);
+    $("channelDetails").textContent="وضعیت: "+(activeChat.is_public?"عمومی":"خصوصی");
+    await loadChats();
+  }catch(e){note("channelNotice",e.message)}
+};
+
+$("copyChannelLink").onclick=async()=>{
+  if(!activeChat)return;
+  if(activeChat.is_public&&activeChat.username){
+    const link=location.origin+location.pathname+"?channel="+encodeURIComponent(activeChat.username);
+    await copyText(link);
+    note("channelNotice","لینک عمومی کپی شد:\n"+link,true);
+  }else if(inviteLink){
+    await copyText(inviteLink);
+    note("channelNotice","لینک دعوت کپی شد.",true);
+  }else{
+    note("channelNotice","برای کانال خصوصی ابتدا لینک دعوت بساز.");
+  }
+};
+
+$("revokeInvite").onclick=async()=>{
+  if(!activeChat||!confirm("لینک دعوت قبلی لغو شود؟"))return;
+  try{
+    await api(`/channels/${encodeURIComponent(activeChat.id)}/invite`,{method:"DELETE"});
+    inviteLink="";
+    note("channelNotice","لینک دعوت قبلی لغو شد.",true);
+  }catch(e){note("channelNotice",e.message)}
+};
+
+async function handleIncomingLink(){
+  const params=new URLSearchParams(location.search);
+  const invite=params.get("invite");
+  const username=params.get("channel");
+  if(!invite&&!username)return;
+  if(!token){modal("auth");note("authNotice","برای باز کردن لینک کانال ابتدا وارد حساب شو.");return}
+  try{
+    let d;
+    if(invite){
+      d=await api(`/invites/${encodeURIComponent(invite)}/join`,{method:"POST"});
+    }else{
+      d=await api(`/channels/public/${encodeURIComponent(username)}`);
+    }
+    await loadChats();
+    const id=d.conversation_id||d.id||d.conversation?.id||d.channel?.id;
+    if(id)await openChat(id);
+    else{
+      const found=chats.find(c=>String(c.username||"").toLowerCase()===username?.toLowerCase());
+      if(found)await openChat(found.id);
+      else alert("لینک بررسی شد، اما شناسه کانال از سرور دریافت نشد.");
+    }
+  }catch(e){alert("باز کردن لینک ناموفق بود: "+e.message)}
+  finally{
+    history.replaceState({},document.title,location.pathname);
+  }
+}
+
+async function init(){
+  if(initRunning||!token)return;
+  initRunning=true;
   setStatus("در حال بررسی نشست...");
-
-  try {
-    const d = await api("/me");
-    me = d.user;
-
-    $("profile").textContent = me.name + " · " + me.phone;
-    $("ownerTools").classList.toggle("show", !!me.is_owner);
-    $("headName").textContent = "نوا پیام";
-    $("headStatus").textContent = "حساب شما متصل است";
+  try{
+    const d=await api("/me");
+    me=d.user||d;
+    updateProfileUI();
+    $("headName").textContent="نوا پیام";
+    $("headStatus").textContent="حساب شما متصل است";
     setStatus("حساب متصل است");
-    modal("auth", false);
-
+    modal("auth",false);
     await loadChats();
     await loadAds();
-
-    if (active) {
-      try {
-        await loadMessages(true);
-      } catch {}
-    }
-  } catch (e) {
-    if (e.status === 401) {
-      // فقط پاسخ 401 از سرور باعث حذف توکن می‌شود.
+    await handleIncomingLink();
+  }catch(e){
+    if(e.status===401){
       localStorage.removeItem("nova_token");
-      token = "";
-      me = null;
-      chats = [];
-      active = null;
-
-      renderChats();
-      setStatus("نیاز به ورود مجدد");
-      $("profile").textContent = "مهمان نوا";
+      token="";me=null;chats=[];active=null;
+      renderChats();setStatus("نیاز به ورود مجدد");
+      $("profile").textContent="مهمان نوا";
       $("ownerTools").classList.remove("show");
-      $("headStatus").textContent = "نشست معتبر نیست";
-
-      modal("auth", true);
-      note(
-        "authNotice",
-        "نشست معتبر نیست یا منقضی شده؛ لطفاً دوباره وارد شو."
-      );
-    } else {
-      // خطای شبکه/سرور توکن را پاک نمی‌کند.
+      modal("auth",true);
+      note("authNotice","نشست معتبر نیست یا منقضی شده؛ دوباره وارد شو.");
+    }else{
       setStatus("اتصال موقتاً برقرار نیست؛ تلاش مجدد انجام می‌شود");
-      $("headStatus").textContent = "در انتظار اتصال به سرور...";
-      modal("auth", false);
     }
-  } finally {
-    initRunning = false;
-  }
+  }finally{initRunning=false}
 }
 
-$("ownerBtn").onclick = async () => {
-  modal("ownerModal");
-  note("ownerNotice", "");
-  await loadOwnerAds();
-};
-
-$("publish").onclick = async () => {
-  const text = $("adText").value.trim();
-
-  if (!text) {
-    note("ownerNotice", "متن تبلیغ را بنویس.");
-    return;
-  }
-
-  try {
-    await api("/owner/announcements", {
-      method: "POST",
-      body: JSON.stringify({text})
-    });
-
-    $("adText").value = "";
-    note("ownerNotice", "تبلیغ منتشر شد.");
-    await loadOwnerAds();
-    await loadAds();
-  } catch (e) {
-    note("ownerNotice", e.message);
-  }
-};
-
-async function loadOwnerAds() {
-  if (!me?.is_owner) return;
-
-  try {
-    const d = await api("/owner/announcements");
-    const box = $("adList");
-    box.replaceChildren();
-
-    (d.announcements || []).forEach(ad => {
-      const row = document.createElement("div");
-      row.className = "adrow";
-
-      const span = document.createElement("span");
-      span.textContent =
-        (ad.active ? "فعال · " : "غیرفعال · ") + ad.text;
-
-      const toggle = document.createElement("button");
-      toggle.textContent = ad.active ? "خاموش" : "فعال";
-
-      toggle.onclick = async () => {
-        try {
-          await api(`/owner/announcements/${ad.id}`, {method: "PATCH"});
-          await loadOwnerAds();
-          await loadAds();
-        } catch (e) {
-          note("ownerNotice", e.message);
-        }
-      };
-
-      const del = document.createElement("button");
-      del.textContent = "حذف";
-
-      del.onclick = async () => {
-        if (!confirm("حذف شود؟")) return;
-
-        try {
-          await api(`/owner/announcements/${ad.id}`, {method: "DELETE"});
-          await loadOwnerAds();
-          await loadAds();
-        } catch (e) {
-          note("ownerNotice", e.message);
-        }
-      };
-
-      row.append(span, toggle, del);
-      box.append(row);
-    });
-  } catch (e) {
-    note("ownerNotice", e.message);
-  }
-}
-
-(async () => {
+(async()=>{
   renderChats();
-  await loadAds();
-
-  if (token) {
+  if(token){
     await init();
-
-    // اگر Render موقتاً در دسترس نباشد، دوباره تلاش می‌کنیم.
-    retryTimer = setInterval(async () => {
-      if (token && !me && !initRunning) {
-        await init();
-      }
-    }, 10000);
-  } else {
-    modal("auth", true);
+    retryTimer=setInterval(()=>{
+      if(token&&!me&&!initRunning)init();
+    },10000);
+  }else{
     setStatus("برای شروع وارد حساب شو");
+    const p=new URLSearchParams(location.search);
+    if(p.has("channel")||p.has("invite")){
+      modal("auth");
+      note("authNotice","برای ادامه، ابتدا وارد حساب شو.");
+    }else modal("auth");
   }
 })();
 </script>
