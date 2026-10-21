@@ -627,3 +627,202 @@ def update_me():
 
     g.user.display_name = name
     g.user.bio = bio
+
+# =========================================================
+# CHANNELS: PUBLIC LINKS AND PRIVATE INVITES
+# =========================================================
+
+@app.post("/channels")
+@auth
+def create_channel():
+    data = request.get_json(silent=True) or {}
+
+    title = str(data.get("title", "")).strip()
+    kind = str(data.get("kind", "channel")).strip().lower()
+    public = bool(data.get("is_public", False))
+    username = str(data.get("username", "")).strip().lower().lstrip("@")
+
+    if not title or len(title) > 120:
+        return json_error("نام کانال باید بین ۱ تا ۱۲۰ نویسه باشد.")
+
+    if kind not in ("channel", "group"):
+        return json_error("نوع گفتگو معتبر نیست.")
+
+    if username and not re.fullmatch(r"[a-z0-9_]{4,32}", username):
+        return json_error("آیدی باید ۴ تا ۳۲ نویسه انگلیسی، عدد یا _ باشد.")
+
+    if public and not username:
+        return json_error("برای کانال عمومی یک آیدی انتخاب کن.")
+
+    if username and Conversation.query.filter_by(username=username).first():
+        return json_error("این آیدی قبلاً استفاده شده است.", 409)
+
+    invite_code = secrets.token_urlsafe(24)
+
+    conversation = Conversation(
+        kind=kind,
+        title=title,
+        description=str(data.get("description", "")).strip()[:500],
+        is_public=public,
+        username=username or None,
+        invite_code=invite_code,
+    )
+
+    db.session.add(conversation)
+    db.session.flush()
+
+    membership = Membership(
+        conversation_id=conversation.id,
+        user_id=g.user.id,
+        role="owner",
+        can_send=True,
+    )
+    db.session.add(membership)
+    db.session.commit()
+
+    return jsonify(
+        success=True,
+        conversation_id=conversation.id,
+        title=conversation.title,
+        username=conversation.username,
+        is_public=conversation.is_public,
+        public_path=(
+            f"/?channel={conversation.username}"
+            if conversation.is_public else None
+        ),
+        invite_code=invite_code,
+        invite_path=f"/?invite={invite_code}",
+    ), 201
+
+
+@app.get("/channels/public/<username>")
+def get_public_channel(username):
+    username = str(username or "").strip().lower().lstrip("@")
+
+    channel = Conversation.query.filter_by(
+        username=username,
+        is_public=True,
+        kind="channel",
+    ).first()
+
+    if not channel:
+        return json_error("کانال عمومی پیدا نشد.", 404)
+
+    return jsonify(
+        success=True,
+        channel={
+            "id": channel.id,
+            "title": channel.title,
+            "username": channel.username,
+            "description": channel.description or "",
+            "avatar_url": channel.avatar_url,
+        },
+    )
+
+
+@app.post("/invites/<code>/join")
+@auth
+def join_private_channel(code):
+    code = str(code or "").strip()
+
+    if not code or len(code) > 100:
+        return json_error("لینک دعوت معتبر نیست.")
+
+    channel = Conversation.query.filter_by(
+        invite_code=code,
+        kind="channel",
+    ).first()
+
+    if not channel:
+        return json_error("لینک دعوت نامعتبر یا لغوشده است.", 404)
+
+    existing = Membership.query.filter_by(
+        conversation_id=channel.id,
+        user_id=g.user.id,
+    ).first()
+
+    if existing:
+        return jsonify(
+            success=True,
+            conversation_id=channel.id,
+            message="از قبل عضو این کانال هستی.",
+        )
+
+    db.session.add(Membership(
+        conversation_id=channel.id,
+        user_id=g.user.id,
+        role="member",
+        can_send=False,
+    ))
+    db.session.commit()
+
+    return jsonify(
+        success=True,
+        conversation_id=channel.id,
+        message="با موفقیت عضو کانال شدی.",
+    )
+
+
+@app.post("/channels/<int:channel_id>/invite")
+@auth
+def regenerate_channel_invite(channel_id):
+    channel = db.session.get(Conversation, channel_id)
+
+    if not channel or channel.kind != "channel":
+        return json_error("کانال پیدا نشد.", 404)
+
+    if not can_manage(channel_id):
+        return json_error("فقط مالک یا مدیر کانال می‌تواند لینک بسازد.", 403)
+
+    channel.invite_code = secrets.token_urlsafe(24)
+    db.session.commit()
+
+    return jsonify(
+        success=True,
+        invite_code=channel.invite_code,
+        invite_path=f"/?invite={channel.invite_code}",
+    )
+
+
+@app.patch("/channels/<int:channel_id>/privacy")
+@auth
+def set_channel_privacy(channel_id):
+    channel = db.session.get(Conversation, channel_id)
+
+    if not channel or channel.kind != "channel":
+        return json_error("کانال پیدا نشد.", 404)
+
+    if not can_manage(channel_id):
+        return json_error("فقط مالک یا مدیر کانال اجازه تغییر دارد.", 403)
+
+    data = request.get_json(silent=True) or {}
+    public = data.get("is_public")
+
+    if not isinstance(public, bool):
+        return json_error("وضعیت عمومی یا خصوصی باید مشخص شود.")
+
+    if public and not channel.username:
+        return json_error("ابتدا برای کانال یک آیدی تعیین کن.")
+
+    channel.is_public = public
+    db.session.commit()
+
+    return jsonify(success=True, is_public=channel.is_public)
+
+
+@app.delete("/channels/<int:channel_id>/invite")
+@auth
+def revoke_channel_invite(channel_id):
+    channel = db.session.get(Conversation, channel_id)
+
+    if not channel or channel.kind != "channel":
+        return json_error("کانال پیدا نشد.", 404)
+
+    if not can_manage(channel_id):
+        return json_error("فقط مالک یا مدیر کانال اجازه دارد.", 403)
+
+    channel.invite_code = None
+    db.session.commit()
+
+    return jsonify(success=True, message="لینک دعوت قبلی لغو شد.")
+    
