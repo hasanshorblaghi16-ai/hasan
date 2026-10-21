@@ -1,383 +1,531 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0b0b">
-  <meta name="description" content="وب‌سایت رسمی HOSSIN MAKU">
-  <title>HOSSIN MAKU | Official</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<meta name="description" content="صفحه رسمی HOSSIN MAKU">
+<title>HOSSIN MAKU | Official</title>
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
 
-    :root {
-      --bg: #090909;
-      --panel: #111111;
-      --gold: #c9a96e;
-      --gold-light: #f0d7a1;
-      --text: #f5f0e7;
-      --muted: #99948a;
-      --border: rgba(201, 169, 110, 0.24);
-    }
+:root {
+  --gold: #d7b46a;
+  --light: #f5dfaa;
+  --bg: #080808;
+  --panel: #12110e;
+  --text: #f5f1e8;
+  --muted: #a39b8c;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    body {
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse at top, #211b12 0%, transparent 45%),
-        var(--bg);
-      color: var(--text);
-      font-family: 'Vazirmatn', Tahoma, sans-serif;
-      display: flex;
-      flex-direction: column;
-    }
+html { scroll-behavior: smooth; }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(ellipse at 50% 5%, #292012 0%, transparent 42%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+}
 
-    .top-line {
-      height: 3px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        var(--gold),
-        var(--gold-light),
-        var(--gold),
-        transparent
-      );
-    }
+a { color: inherit; text-decoration: none; }
 
-    header {
-      width: 100%;
-      max-width: 1100px;
-      margin: auto;
-      padding: 25px 22px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
+.top-line {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), #fff0c0, var(--gold), transparent);
+  background-size: 200% 100%;
+  animation: shine 5s linear infinite;
+}
 
-    .brand {
-      font-size: 19px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: var(--gold-light);
-    }
+header {
+  max-width: 1000px;
+  margin: auto;
+  padding: 24px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .status {
-      font-size: 11px;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 7px 12px;
-      border-radius: 30px;
-    }
+.brand {
+  color: var(--light);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
 
-    .status span {
-      color: var(--gold);
-      margin-left: 5px;
-    }
+.status {
+  color: var(--muted);
+  font-size: 11px;
+  border: 1px solid #66522d;
+  padding: 7px 12px;
+  border-radius: 30px;
+}
 
-    main {
-      width: 100%;
-      max-width: 760px;
-      margin: auto;
-      padding: 48px 22px 70px;
-      text-align: center;
-    }
+.status span {
+  color: var(--gold);
+  margin-left: 5px;
+}
 
-    .emblem {
-      width: 112px;
-      height: 112px;
-      border: 1px solid var(--gold);
-      outline: 1px solid var(--border);
-      outline-offset: 7px;
-      border-radius: 50%;
-      margin: 0 auto 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold-light);
-      font-family: Georgia, serif;
-      font-size: 37px;
-      font-weight: bold;
-      letter-spacing: -2px;
-      background: linear-gradient(145deg, #201a11, #080808);
-      box-shadow: 0 0 45px rgba(201, 169, 110, 0.08);
-    }
+main {
+  max-width: 680px;
+  margin: auto;
+  padding: 35px 20px 65px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
 
-    .eyebrow {
-      color: var(--gold);
-      font-size: 11px;
-      letter-spacing: 5px;
-      direction: ltr;
-      margin-bottom: 18px;
-    }
+.profile-wrap {
+  width: 142px;
+  height: 142px;
+  margin: 12px auto 30px;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
 
-    h1 {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(35px, 8vw, 64px);
-      font-weight: 500;
-      letter-spacing: 2px;
-      direction: ltr;
-      line-height: 1.2;
-      color: var(--text);
-    }
+.profile-wrap::before,
+.profile-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  animation: rotate 12s linear infinite;
+}
 
-    .subtitle {
-      margin-top: 20px;
-      font-size: 14px;
-      font-weight: 300;
-      color: #b5aea2;
-      line-height: 2.2;
-    }
+.profile-wrap::after {
+  inset: -8px;
+  border-color: #8d6c34;
+  border-style: dashed;
+  animation-direction: reverse;
+  animation-duration: 30s;
+}
 
-    .divider {
-      width: 75px;
-      height: 1px;
-      background: var(--gold);
-      margin: 32px auto;
-      opacity: 0.7;
-    }
+.profile {
+  width: 126px;
+  height: 126px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 30px #d7b46a25;
+  position: relative;
+  z-index: 1;
+}
 
-    .section-title {
-      font-size: 13px;
-      color: var(--gold-light);
-      font-weight: 500;
-      margin-bottom: 22px;
-    }
+.monogram {
+  position: absolute;
+  z-index: 0;
+  font-family: Georgia, serif;
+  font-size: 42px;
+  font-weight: bold;
+  color: var(--light);
+  letter-spacing: -3px;
+}
 
-    .buttons {
-      display: grid;
-      gap: 13px;
-      max-width: 430px;
-      margin: 0 auto;
-    }
+.eyebrow {
+  color: var(--gold);
+  font-size: 10px;
+  letter-spacing: 5px;
+  direction: ltr;
+  margin-bottom: 15px;
+}
 
-    .btn {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      width: 100%;
-      min-height: 69px;
-      padding: 14px 19px;
-      border: 1px solid var(--border);
-      background: linear-gradient(110deg, #151515, #101010);
-      border-radius: 5px;
-      text-align: right;
-      transition: 0.25s ease;
-      overflow: hidden;
-    }
+h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(36px, 9vw, 64px);
+  font-weight: 500;
+  letter-spacing: 2px;
+  direction: ltr;
+  line-height: 1.2;
+  text-shadow: 0 0 35px #d7b46a18;
+}
 
-    .btn:hover {
-      border-color: var(--gold);
-      background: #1b1710;
-      transform: translateY(-2px);
-    }
+.subtitle {
+  margin-top: 19px;
+  color: #bcb3a4;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 2.3;
+}
 
-    .btn-main {
-      border-color: rgba(201, 169, 110, 0.65);
-      background: linear-gradient(110deg, #272014, #15120d);
-    }
+.divider {
+  width: 90px;
+  height: 1px;
+  margin: 30px auto;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
 
-    .btn-info {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
+.section-title {
+  font-size: 13px;
+  color: var(--light);
+  margin-bottom: 19px;
+}
 
-    .btn-icon {
-      width: 39px;
-      height: 39px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold-light);
-      font-size: 19px;
-      flex-shrink: 0;
-    }
+.buttons {
+  max-width: 440px;
+  margin: auto;
+  display: grid;
+  gap: 13px;
+}
 
-    .btn-text strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
+.btn {
+  width: 100%;
+  min-height: 70px;
+  padding: 13px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: right;
+  border: 1px solid #4b3c24;
+  border-radius: 5px;
+  background: linear-gradient(110deg, #171510, #101010);
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+  animation: appear .7s both;
+}
 
-    .btn-text small {
-      display: block;
-      margin-top: 5px;
-      font-size: 10px;
-      color: var(--muted);
-      direction: ltr;
-      text-align: right;
-    }
+.btn:nth-child(2) { animation-delay: .12s; }
+.btn:nth-child(3) { animation-delay: .24s; }
+.btn:nth-child(4) { animation-delay: .36s; }
 
-    .arrow {
-      color: var(--gold);
-      font-size: 20px;
-      direction: ltr;
-    }
+.btn:hover {
+  transform: translateY(-3px);
+  border-color: var(--gold);
+  box-shadow: 0 8px 28px #d7b46a12;
+}
 
-    .quote {
-      margin: 42px auto 0;
-      color: #8f887c;
-      font-size: 12px;
-      font-weight: 300;
-      line-height: 2.3;
-    }
+.btn-main {
+  background: linear-gradient(110deg, #302515, #17130d);
+  border-color: #a9884d;
+}
 
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 23px 15px;
-      border-top: 1px solid rgba(201, 169, 110, 0.12);
-      color: #777167;
-      font-size: 10px;
-      letter-spacing: 0.5px;
-    }
+.btn-info {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
 
-    footer strong {
-      color: var(--gold);
-      font-weight: 500;
-    }
+.btn-icon {
+  width: 41px;
+  height: 41px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #705832;
+  border-radius: 4px;
+  color: var(--light);
+  font-size: 20px;
+}
 
-    @media (max-width: 480px) {
-      header {
-        padding: 21px 18px;
-      }
+.btn-text strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
 
-      .brand {
-        font-size: 16px;
-      }
+.btn-text small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 9px;
+  direction: ltr;
+  text-align: right;
+}
 
-      main {
-        padding-top: 38px;
-      }
+.arrow {
+  color: var(--gold);
+  font-size: 20px;
+  direction: ltr;
+}
 
-      .emblem {
-        width: 95px;
-        height: 95px;
-        font-size: 32px;
-      }
+.stats {
+  margin: 28px auto 0;
+  max-width: 440px;
+  padding: 19px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #40331f;
+  background: #100f0c;
+  border-radius: 5px;
+}
 
-      .subtitle {
-        font-size: 12px;
-      }
+.stats-icon {
+  font-size: 22px;
+  color: var(--gold);
+}
 
-      .btn {
-        min-height: 65px;
-      }
-    }
-  </style>
+.stats strong {
+  display: block;
+  color: var(--light);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.stats small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.quote {
+  margin-top: 32px;
+  color: #8d8475;
+  font-size: 12px;
+  line-height: 2.3;
+}
+
+footer {
+  text-align: center;
+  padding: 23px 15px;
+  border-top: 1px solid #d7b46a18;
+  color: #777064;
+  font-size: 10px;
+}
+
+footer strong { color: var(--gold); }
+
+.particles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  bottom: -10px;
+  width: 3px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 9px var(--gold);
+  animation: floatUp linear infinite;
+}
+
+@keyframes shine {
+  to { background-position: 200% 0; }
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 0; }
+  15% { opacity: .65; }
+  85% { opacity: .35; }
+  100% { transform: translateY(-105vh); opacity: 0; }
+}
+
+@media (max-width: 480px) {
+  header { padding: 20px 16px; }
+  .brand { font-size: 15px; }
+  main { padding-top: 30px; }
+  .profile-wrap { width: 128px; height: 128px; }
+  .profile { width: 114px; height: 114px; }
+  .btn { min-height: 66px; padding: 12px; }
+  .btn-text strong { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
 </head>
 
 <body>
-  <div class="top-line"></div>
+<div class="top-line"></div>
+<div class="particles" id="particles"></div>
 
-  <header>
-    <a href="#" class="brand">HOSSIN MAKU</a>
-    <div class="status"><span>●</span> صفحه رسمی</div>
-  </header>
+<header>
+  <a href="#" class="brand">HOSSIN MAKU</a>
+  <div class="status"><span>●</span> صفحه رسمی</div>
+</header>
 
-  <main>
-    <div class="emblem">HM</div>
+<main>
+  <div class="profile-wrap">
+    <div class="monogram" id="monogram">HM</div>
+    <img
+      src="profile.jpg"
+      alt="عکس پروفایل HOSSIN MAKU"
+      class="profile"
+      id="profile"
+    >
+  </div>
 
-    <p class="eyebrow">WELCOME TO MY WORLD</p>
+  <p class="eyebrow">WELCOME TO MY WORLD</p>
+  <h1>HOSSIN MAKU</h1>
 
-    <h1>HOSSIN MAKU</h1>
+  <p class="subtitle">
+    به صفحه رسمی من خوش آمدید
+    <br>
+    از طریق راه‌های ارتباطی زیر با من همراه باشید.
+  </p>
 
-    <p class="subtitle">
-      به صفحه رسمی من خوش آمدید
-      <br>
-      از طریق راه‌های ارتباطی زیر با من همراه باشید.
-    </p>
+  <div class="divider"></div>
+  <p class="section-title">راه‌های ارتباطی</p>
 
-    <div class="divider"></div>
-
-    <p class="section-title">راه‌های ارتباطی</p>
-
-    <div class="buttons">
-
-      <!-- پیام خصوصی -->
-      <a
-        class="btn btn-main"
-        href="https://splus.ir/hossin_maku"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span class="btn-info">
-          <span class="btn-icon">✉</span>
-          <span class="btn-text">
-            <strong>ارسال پیام به HOSSIN MAKU</strong>
-            <small>PRIVATE MESSAGE</small>
-          </span>
+  <div class="buttons">
+    <a class="btn btn-main"
+       href="https://splus.ir/hossin_maku"
+       target="_blank" rel="noopener noreferrer">
+      <span class="btn-info">
+        <span class="btn-icon">✉</span>
+        <span class="btn-text">
+          <strong>ارسال پیام به HOSSIN MAKU</strong>
+          <small>PRIVATE MESSAGE</small>
         </span>
-        <span class="arrow">↗</span>
-      </a>
+      </span>
+      <span class="arrow">↗</span>
+    </a>
 
-      <!-- گروه -->
-      <a
-        class="btn"
-        href="https://splus.ir/joingroup/AX9OtmDWb0dA0tddw9VbXg"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span class="btn-info">
-          <span class="btn-icon">♧</span>
-          <span class="btn-text">
-            <strong>عضویت در گروه HOSSIN MAKU</strong>
-            <small>JOIN THE GROUP</small>
-          </span>
+    <a class="btn"
+       href="https://splus.ir/joingroup/AX9OtmDWb0dA0tddw9VbXg"
+       target="_blank" rel="noopener noreferrer">
+      <span class="btn-info">
+        <span class="btn-icon">♧</span>
+        <span class="btn-text">
+          <strong>عضویت در گروه HOSSIN MAKU</strong>
+          <small>JOIN THE GROUP</small>
         </span>
-        <span class="arrow">↗</span>
-      </a>
+      </span>
+      <span class="arrow">↗</span>
+    </a>
 
-      <!-- کانال -->
-      <a
-        class="btn"
-        href="https://splus.ir/hossin_maku1"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span class="btn-info">
-          <span class="btn-icon">◈</span>
-          <span class="btn-text">
-            <strong>کانال HOSSIN MAKU</strong>
-            <small>OFFICIAL CHANNEL</small>
-          </span>
+    <a class="btn"
+       href="https://splus.ir/hossin_maku1"
+       target="_blank" rel="noopener noreferrer">
+      <span class="btn-info">
+        <span class="btn-icon">◈</span>
+        <span class="btn-text">
+          <strong>کانال HOSSIN MAKU</strong>
+          <small>OFFICIAL CHANNEL</small>
         </span>
-        <span class="arrow">↗</span>
-      </a>
+      </span>
+      <span class="arrow">↗</span>
+    </a>
 
+    <button class="btn" id="shareBtn" type="button">
+      <span class="btn-info">
+        <span class="btn-icon">↗</span>
+        <span class="btn-text">
+          <strong>اشتراک‌گذاری سایت</strong>
+          <small>SHARE THIS WEBSITE</small>
+        </span>
+      </span>
+      <span class="arrow">＋</span>
+    </button>
+  </div>
+
+  <div class="stats">
+    <span class="stats-icon">◉</span>
+    <div>
+      <strong id="visitCount">—</strong>
+      <small>تعداد بازدیدهای این مرورگر</small>
     </div>
+  </div>
 
-    <p class="quote">
-      «سادگی، اصالت و شخصیت؛ فراتر از زمان»
-    </p>
-  </main>
+  <p class="quote">«سادگی، اصالت و شخصیت؛ فراتر از زمان»</p>
+</main>
 
-  <footer>
-    © <span id="year">2026</span>
-    <strong> HOSSIN MAKU </strong>
-    — تمامی حقوق محفوظ است.
-  </footer>
+<footer>
+  © <span id="year"></span>
+  <strong> HOSSIN MAKU </strong>
+  — تمامی حقوق محفوظ است.
+</footer>
 
-  <script>
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
-  </script>
+<script>
+  // نمایش عکس یا لوگوی HM در صورت نبود عکس
+  const profile = document.getElementById('profile');
+  const monogram = document.getElementById('monogram');
+
+  function showFallback() {
+    profile.style.display = 'none';
+    monogram.style.zIndex = '2';
+  }
+
+  profile.addEventListener('error', showFallback);
+  profile.addEventListener('load', () => {
+    profile.style.display = 'block';
+    monogram.style.zIndex = '0';
+  });
+
+  if (profile.complete && profile.naturalWidth === 0) {
+    showFallback();
+  }
+
+  // اشتراک‌گذاری یا کپی لینک سایت
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    const data = {
+      title: 'HOSSIN MAKU',
+      text: 'صفحه رسمی HOSSIN MAKU',
+      url: location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(data);
+      } else if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(data.url);
+        alert('لینک سایت کپی شد!');
+      } else {
+        window.prompt('لینک سایت را کپی کن:', data.url);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        window.prompt('لینک سایت را کپی کن:', data.url);
+      }
+    }
+  });
+
+  // شمارنده محلی؛ فقط همین مرورگر
+  try {
+    const key = 'hossin_maku_local_visits';
+    const count = Number(localStorage.getItem(key) || 0) + 1;
+    localStorage.setItem(key, String(count));
+    document.getElementById('visitCount').textContent =
+      count.toLocaleString('fa-IR');
+  } catch (error) {
+    document.getElementById('visitCount').textContent = '—';
+  }
+
+  // سال جاری
+  document.getElementById('year').textContent =
+    new Date().getFullYear();
+
+  // ذرات طلایی متحرک
+  const particles = document.getElementById('particles');
+
+  for (let i = 0; i < 18; i++) {
+    const particle = document.createElement('span');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDuration = (9 + Math.random() * 13) + 's';
+    particle.style.animationDelay = (Math.random() * 15) + 's';
+    particles.appendChild(particle);
+  }
+</script>
 </body>
 </html>
